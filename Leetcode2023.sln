@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leetcode2023", "Leetcode2023\Leetcode2023.csproj", "{1DD869F0-A100-4A04-8E27-55D8116AAA7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Leetcode2023", "Leetcode2023\Leetcode2023.csproj", "{1DD869F0-A100-4A04-8E27-55D8116AAA7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jan", "Jan\Jan.csproj", "{D6518CB3-825D-43E0-B40C-EA454006196F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Feb", "Feb\Feb.csproj", "{198B3322-7037-46FE-A80A-55CC69D9597A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mar", "Mar\Mar.csproj", "{11F26678-30EF-472D-A71B-E81F467FE225}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{1DD869F0-A100-4A04-8E27-55D8116AAA7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DD869F0-A100-4A04-8E27-55D8116AAA7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DD869F0-A100-4A04-8E27-55D8116AAA7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6518CB3-825D-43E0-B40C-EA454006196F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6518CB3-825D-43E0-B40C-EA454006196F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6518CB3-825D-43E0-B40C-EA454006196F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6518CB3-825D-43E0-B40C-EA454006196F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{198B3322-7037-46FE-A80A-55CC69D9597A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{198B3322-7037-46FE-A80A-55CC69D9597A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{198B3322-7037-46FE-A80A-55CC69D9597A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{198B3322-7037-46FE-A80A-55CC69D9597A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11F26678-30EF-472D-A71B-E81F467FE225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11F26678-30EF-472D-A71B-E81F467FE225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11F26678-30EF-472D-A71B-E81F467FE225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11F26678-30EF-472D-A71B-E81F467FE225}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
