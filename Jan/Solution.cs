@@ -9,19 +9,19 @@
 
             string[] words = s.Split(' ');
 
-            if(words.Length == chars.Length && words.Distinct().Count() == chars.Distinct().Count())
+            if (words.Length == chars.Length && words.Distinct().Count() == chars.Distinct().Count())
             {
                 Dictionary<char, string> map = new Dictionary<char, string>();
 
 
-                for(int i = 0; i < words.Length; i++)
+                for (int i = 0; i < words.Length; i++)
                 {
                     char c = chars[i];
                     string word = words[i];
 
                     if (map.ContainsKey(c))
                     {
-                        if(map[c] != word) return false;
+                        if (map[c] != word) return false;
                     }
                     else
                     {
@@ -29,17 +29,63 @@
                     }
                 }
                 return true;
-                                
+
             }
 
             return false;
         }
         #endregion
 
-        #region Problem Day 2
+        #region Problem Day 2 520. Detect Capital
+        public bool DetectCapitalUse(string word)
+        {
+            if (word.Length == 1) return true;
+
+            if (!isCap(word[0]))
+            {
+                return word.Where(x => isCap(x)).Count() == 0;
+            }
+            else if (isCap(word[0]) && isCap(word[1]))
+            {
+                return word.Where(x => !isCap(x)).Count() == 0;
+            }
+            else
+            {
+                return word.Skip(1).Where(x => isCap(x)).Count() == 0;
+            }
+        }
+
+        private bool isCap(char c)
+        {
+            return c >= 'A' && c <= 'Z';
+        }
         #endregion
 
-        #region Problem Day 3
+        #region Problem Day 3 944. Delete Columns to Make Sorted
+        public int MinDeletionSize(string[] strs)
+        {
+            if (strs.Length == 1) return 0;
+            int cnt = 0;
+            for (int i = 0; i < strs[0].Length; i++)
+            {
+                int o = -1;
+                for (int j = 0; j < strs.Length; j++)
+                {
+                    char p = strs[j][i];
+
+                    if (p >= o)
+                    {
+                        o = p;
+                    }
+                    else
+                    {
+                        cnt++;
+                        break;
+                    }
+                }
+            }
+            return cnt;
+        }
         #endregion
 
         #region Problem Day 4
@@ -124,6 +170,79 @@
         #endregion
 
         #region Problem Day 31
+        #endregion
+
+        #region Problem 2520. Count the Digits That Divide a Number
+        public int CountDigits(int num)
+        {
+            int n = num;
+            int cnt = 0;
+
+            while (n>0)
+            {
+                int k = n % 10;
+                n/=10;
+
+                if (num % k == 0) cnt++;
+            }
+            return cnt;
+        }
+        #endregion
+        #region Problem 2523. Closest Prime Numbers in Range
+        public int[] ClosestPrimes(int left, int right)
+        {
+            int num1 = -1, num2 = -1, x = -1, y = -1;
+
+            right = right % 2 == 0 ? right - 1 : right;
+            left = left % 2 == 0 ? left + 1 : left;
+            int diff = int.MaxValue;
+
+            for (int i = right; i >= left; i = i - 2)
+            {
+                if (isPrime(i))
+                {
+                    if (x == -1)
+                    {
+                        x = i;
+                    }
+                    else if (y == -1)
+                    {
+                        y = i;
+
+                        diff = x - y;
+                        num1 = y;
+                        num2 = x;
+                    }
+                    else
+                    {
+                        x = y;
+                        y = i;
+                        if (diff >= x - y)
+                        {
+                            diff = x - y;
+                            num1 = y;
+                            num2 = x;
+                        }
+                    }
+                }
+            }
+
+
+            return new int[] { num1, num2 };
+        }
+
+        private bool isPrime(int num)
+        {
+            if (num <= 1) return false;
+            if (num <= 3) return true;
+            if (num % 2 == 0 || num % 3 == 0) return false;
+            for (int i = 5; i * i <= num; i = i + 6)
+            {
+                if (num % i == 0 || num % (i + 2) == 0)
+                    return false;
+            }
+            return true;
+        }
         #endregion
     }
 }
