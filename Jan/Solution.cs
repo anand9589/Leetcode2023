@@ -182,7 +182,22 @@
 
         #endregion
 
-        #region Problem Day 6
+        #region Problem Day 6 1833. Maximum Ice Cream Bars
+        public int MaxIceCream(int[] costs, int coins)
+        {
+            Array.Sort(costs);
+           
+            int count = 0;
+
+            foreach (var cost in costs)
+            {
+                if (coins < cost) break;
+                count++;
+                coins-=cost;
+            }
+
+            return count;
+        }
         #endregion
 
         #region Problem Day 7
