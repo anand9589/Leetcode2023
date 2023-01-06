@@ -88,10 +88,98 @@
         }
         #endregion
 
-        #region Problem Day 4
+        #region Problem Day 4 2244. Minimum Rounds to Complete All Tasks
+        public int MinimumRounds(int[] tasks)
+        {
+            int days = 0;
+            IDictionary<int, int> map = new Dictionary<int, int>();
+
+            foreach (int task in tasks)
+            {
+                if (!map.ContainsKey(task))
+                {
+                    map.Add(task, 0);
+                }
+                map[task]++;
+            }
+
+            foreach (var key in map.Keys)
+            {
+                if (map[key] < 2) return -1;
+
+                int p = map[key] % 3;
+                days += map[key] / 3;
+
+                if (p > 0) days++;
+            }
+
+            return days;
+        }
+        public int MinimumRounds_V1(int[] tasks)
+        {
+            int days = 0;
+            IDictionary<int, int> map = new Dictionary<int, int>();
+
+            foreach (int task in tasks)
+            {
+                if (!map.ContainsKey(task))
+                {
+                    map.Add(task, 0);
+                }
+                map[task]++;
+            }
+
+
+            foreach (var key in map.Keys)
+            {
+                if (map[key] < 2) return -1;
+                while (map[key] > 4)
+                {
+                    days++;
+                    map[key] -= 3;
+                }
+
+                if (map[key] != 0)
+                {
+                    if (map[key] == 4)
+                    {
+                        days += 2;
+                    }
+                    else
+                    {
+                        days++;
+                    }
+                    map[key] = 0;
+                }
+            }
+
+            return days;
+        }
         #endregion
 
-        #region Problem Day 5
+        #region Problem Day 5 452. Minimum Number of Arrows to Burst Balloons
+        public int FindMinArrowShots(int[][] points)
+        {
+            int count = 1;
+            Array.Sort(points, (x, y) => { 
+                if(x[1] < y[1]) return -1;
+                if(x[1] > y[1]) return 1;
+                return 0; });
+
+            int p1 = points[0][1];
+
+            for (int i = 1; i < points.Length; i++)
+            {
+                if(points[i][0] > p1 && points[i][1] > p1)
+                {
+                    p1 = points[i][1];
+                    count++;
+                }
+            }
+            return count;
+        }
+
+
         #endregion
 
         #region Problem Day 6
@@ -178,10 +266,10 @@
             int n = num;
             int cnt = 0;
 
-            while (n>0)
+            while (n > 0)
             {
                 int k = n % 10;
-                n/=10;
+                n /= 10;
 
                 if (num % k == 0) cnt++;
             }

@@ -5,5 +5,5 @@ using Jan;
 
 Solution solution = new Solution();
 
-var p = solution.ClosestPrimes(10,20);
+var p = solution.FindMinArrowShots(new int[][] { new int[] { 10, 16 }, new int[] { 2, 8 }, new int[] { 1, 6 }, new int[] { 7, 12 }, new int[] { 10, 20 } });
 Console.WriteLine(p);
