@@ -161,16 +161,18 @@
         public int FindMinArrowShots(int[][] points)
         {
             int count = 1;
-            Array.Sort(points, (x, y) => { 
-                if(x[1] < y[1]) return -1;
-                if(x[1] > y[1]) return 1;
-                return 0; });
+            Array.Sort(points, (x, y) =>
+            {
+                if (x[1] < y[1]) return -1;
+                if (x[1] > y[1]) return 1;
+                return 0;
+            });
 
             int p1 = points[0][1];
 
             for (int i = 1; i < points.Length; i++)
             {
-                if(points[i][0] > p1 && points[i][1] > p1)
+                if (points[i][0] > p1 && points[i][1] > p1)
                 {
                     p1 = points[i][1];
                     count++;
@@ -186,21 +188,39 @@
         public int MaxIceCream(int[] costs, int coins)
         {
             Array.Sort(costs);
-           
+
             int count = 0;
 
             foreach (var cost in costs)
             {
                 if (coins < cost) break;
                 count++;
-                coins-=cost;
+                coins -= cost;
             }
 
             return count;
         }
         #endregion
 
-        #region Problem Day 7
+        #region Problem Day 7 134. Gas Station
+        public int CanCompleteCircuit(int[] gas, int[] cost)
+        {
+            int result = 0, diff = 0, sum = 0;
+
+            for (int i = 0; i < gas.Length; i++)
+            {
+                sum += gas[i]-cost[i];
+                if (sum < 0)
+                {
+                    diff += sum;
+                    sum = 0;
+                    result = i + 1;
+                }
+            }
+
+            diff += sum;
+            return diff >= 0 ? result : -1;
+        }
         #endregion
 
         #region Problem Day 8
