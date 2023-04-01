@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Jan\Jan.csproj" />
+    <ProjectReference Include="..\..\LeetCodeWeekly\LeetCode\Common\Common.csproj" />
+    <ProjectReference Include="..\Mar\Mar.csproj" />
   </ItemGroup>
 
 </Project>
