@@ -6,3 +6,5 @@
 */bin
 */obj
 /.vs/
+/Leetcode2023/Testcase.txt
+/Leetcode2023/Program.cs
