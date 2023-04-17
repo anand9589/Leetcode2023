@@ -1,4 +1,5 @@
 ﻿using Common;
+using System.Text;
 
 namespace April
 {
@@ -343,28 +344,286 @@ namespace April
         }
         #endregion
 
-        #region Problem Day 9
+        #region Problem Day 9 1857. Largest Color Value in a Directed Graph
+        public int LargestPathValue(string colors, int[][] edges)
+        {
+
+            var parentToChildren = new List<HashSet<int>>();
+            var childToParents = new List<HashSet<int>>();
+            var n = colors.Length;
+
+            var outDegree = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                parentToChildren.Add(new HashSet<int>());
+                childToParents.Add(new HashSet<int>());
+            }
+            foreach (var edge in edges)
+            {
+                parentToChildren[edge[0]].Add(edge[1]);
+                childToParents[edge[1]].Add(edge[0]);
+
+                outDegree[edge[0]]++;
+            }
+
+            var colorMap = new int[n, 26];
+
+            var q = new Queue<int>();
+            for (int i = 0; i < n; i++)
+            {
+                if (outDegree[i] == 0)
+                    q.Enqueue(i);
+            }
+
+            var result = 0;
+            var count = n;
+            while (q.Count > 0)
+            {
+                count--;
+                var node = q.Dequeue();
+
+                for (int i = 0; i < 26; i++)
+                {
+                    foreach (var child in parentToChildren[node])
+                    {
+                        colorMap[node, i] = Math.Max(colorMap[node, i], colorMap[child, i]);
+                    }
+                }
+                colorMap[node, colors[node] - 'a']++;
+                result = Math.Max(result, colorMap[node, colors[node] - 'a']);
+
+                foreach (var parent in childToParents[node])
+                {
+                    outDegree[parent]--;
+                    if (outDegree[parent] == 0)
+                    {
+                        q.Enqueue(parent);
+                    }
+                }
+            }
+            return count > 0 ? -1 : result;
+        }
         #endregion
 
-        #region Problem Day 10
+        #region Problem Day 10 20. Valid Parentheses
+        public bool IsValid(string s)
+        {
+            Stack<char> stack = new Stack<char>();
+            int i = 0;
+
+            while (i < s.Length)
+            {
+                switch (s[i])
+                {
+                    case '}':
+                        if (stack.Count == 0 || stack.Count == 0 || stack.Pop() != '{') return false;
+                        break;
+                    case ')':
+                        if (stack.Count == 0 || stack.Pop() != '(') return false;
+                        break;
+                    case ']':
+                        if (stack.Count == 0 || stack.Pop() != '[') return false;
+                        break;
+                    default:
+                        stack.Push(s[i]);
+                        break;
+                }
+                i++;
+            }
+            return stack.Count == 0;
+        }
         #endregion
 
-        #region Problem Day 11
+        #region Problem Day 11 2390. Removing Stars From a String
+        public string RemoveStars(string s)
+        {
+
+            int j = -1;
+            StringBuilder s1 = new StringBuilder();
+            int i = 0;
+
+            while (i < s.Length)
+            {
+                if (s[i] == '*')
+                {
+                    s1.Remove(j, 1);
+                    j--;
+                }
+                else
+                {
+                    s1.Append(s[i]);
+                    j++;
+                }
+                i++;
+            }
+            return s1.ToString();
+        }
+
+        public string RemoveStars_v1(string s)
+        {
+            Stack<char> stack = new Stack<char>();
+            int i = 0;
+
+            while (i < s.Length)
+            {
+                if (s[i] == '*')
+                {
+                    stack.Pop();
+                }
+                else
+                {
+                    stack.Push(s[i]);
+                }
+                i++;
+            }
+
+
+            StringBuilder s1 = new StringBuilder();
+
+            while (stack.Count > 0)
+            {
+                s1.Insert(0, stack.Pop());
+            }
+            return s1.ToString();
+        }
         #endregion
 
-        #region Problem Day 12
+        #region Problem Day 12 71. Simplify Path
+        public string SimplifyPath(string path)
+        {
+            if (!path.StartsWith("/")) return "";
+
+            string[] strs = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            Stack<string> stack = new Stack<string>();
+            foreach (string str in strs)
+            {
+                if (str == ".") continue;
+                if (str == "..")
+                {
+                    if (stack.Count > 0)
+                    {
+                        stack.Pop();
+                    }
+
+                    continue;
+                }
+                stack.Push(str);
+
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while (stack.Count > 0)
+            {
+                stringBuilder.Insert(0, stack.Pop());
+                stringBuilder.Insert(0, "/");
+            }
+
+            return stringBuilder.Length == 0 ? "/" : stringBuilder.ToString();
+        }
         #endregion
 
-        #region Problem Day 13
+        #region Problem Day 13 946. Validate Stack Sequences
+        public bool ValidateStackSequences(int[] pushed, int[] popped)
+        {
+            int n = pushed.Length;
+            Stack<int> stack = new Stack<int>();
+            int pushIndex = 0;
+            int popIndex = 0;
+            while (pushIndex < n)
+            {
+                while (stack.Count > 0 && stack.Peek() == popped[popIndex])
+                {
+                    stack.Pop();
+                    popIndex++;
+                }
+                stack.Push(pushed[pushIndex]);
+                pushIndex++;
+            }
+
+            while (popIndex < n && stack.Peek() == popped[popIndex])
+            {
+                stack.Pop();
+                popIndex++;
+            }
+
+            return stack.Count == 0;
+        }
         #endregion
 
-        #region Problem Day 14
+        #region Problem Day 14 516. Longest Palindromic Subsequence
+        public int LongestPalindromeSubseq(string s)
+        {
+
+            int length = s.Length;
+
+            int[][] dp = new int[length][];
+
+            for (int i = 0; i < length; i++)
+            {
+                dp[i] = new int[length];
+                dp[i][i] = 1;
+            }
+
+
+            for (int i = 1; i < length; i++)
+            {
+                for (int j = 0; j < length - i; j++)
+                {
+                    if (s[j] == s[j + i])
+                    {
+                        dp[j][j + i] = 2 + dp[j + 1][j + i - 1];
+                    }
+                    else
+                    {
+                        dp[j][j + i] = Math.Max(dp[j][j + i - 1], dp[j + 1][j + i]);
+                    }
+                }
+            }
+            return dp[0][length - 1];
+        }
         #endregion
 
-        #region Problem Day 15
+        #region Problem Day 15 2218. Maximum Value of K Coins From Piles
+        int[][] dp;
+        public int MaxValueOfCoins(IList<IList<int>> piles, int k)
+        {
+            int len = piles.Count;
+            dp = new int[len + 1][];
+
+            for (int i = 0; i <= len; i++)
+            {
+                dp[i] = new int[k + 1];
+            }
+            return knapsack(piles, len - 1, k);
+        }
+
+        private int knapsack(IList<IList<int>> piles, int v, int k)
+        {
+            if (v < 0 || k == 0) return 0;
+            if (dp[v][k] != 0) return dp[v][k];
+
+            int m = Math.Min(piles[v].Count, k);
+
+            int exclude = knapsack(piles, v - 1, k);
+
+            int include = 0;
+
+            for (int i = 0, sum = 0; i < m; i++)
+            {
+                sum += piles[v][i];
+                include = Math.Max(include, sum + knapsack(piles, v - 1, k - i - 1));
+            }
+
+            return dp[v][k] = Math.Max(include, exclude);
+        }
         #endregion
 
-        #region Problem Day 16
+        #region Problem Day 16 1431. Kids With the Greatest Number of Candies
+        public IList<bool> KidsWithCandies(int[] candies, int extraCandies)
+        {
+            int max = candies.Max();
+            return candies.Select(x => x + extraCandies >= max).ToList<bool>();
+        }
         #endregion
 
         #region Problem Day 17
@@ -638,6 +897,158 @@ namespace April
             }
         }
 
+        #endregion
+
+        #region Weekly 340
+        public int DiagonalPrime(int[][] nums)
+        {
+            int result = 0;
+            int j = nums.Length - 1;
+            int i = 0;
+            while (i < nums.Length && j >= 0)
+            {
+                if (IsPrime(nums[i][i]))
+                {
+                    result = Math.Max(result, nums[i][i]);
+                }
+
+                if (IsPrime(nums[i][j]))
+                {
+                    result = Math.Max(result, nums[i][j]);
+                }
+                i++;
+                j--;
+            }
+
+            return result;
+        }
+
+        public static bool IsPrime(int number)
+        {
+            if (number <= 1) return false;
+            if (number == 2) return true;
+            if (number % 2 == 0) return false;
+
+            var boundary = (int)Math.Floor(Math.Sqrt(number));
+
+            for (int i = 3; i <= boundary; i += 2)
+                if (number % i == 0)
+                    return false;
+
+            return true;
+        }
+
+        //public long[]
+        public long[] Distance_V1(int[] nums)
+        {
+            long[] result = new long[nums.Length];
+            Dictionary<int, List<int>> map = new Dictionary<int, List<int>>();
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (map.ContainsKey(nums[i]))
+                {
+                    long sum = 0;
+                    foreach (var item in map[nums[i]])
+                    {
+                        sum += Math.Abs(item - i);
+                        result[item] += Math.Abs(item - i);
+                    }
+
+                    map[nums[i]].Add(i);
+                    result[i] = sum;
+                }
+                else
+                {
+                    map.Add(nums[i], new List<int>() { i });
+                }
+            }
+
+            return result;
+        }
+        #endregion
+
+        #region Weekly 341
+        public int[] RowAndMaximumOnes(int[][] mat)
+        {
+            int[] result = new int[] { -1, -1 };
+            for (int i = 0; i < mat.Length; i++)
+            {
+                int sum = 0;
+                for (int j = 0; j < mat[i].Length; j++)
+                {
+                    sum += mat[i][j];
+                }
+
+                if (sum > result[1])
+                {
+                    result[0] = i;
+                    result[1] = sum;
+                }
+            }
+
+            return result;
+        }
+
+        public int MaxDivScore(int[] nums, int[] divisors)
+        {
+            int result = int.MaxValue;
+
+            IDictionary<int, int> map = new Dictionary<int, int>();
+
+            int count = 0;
+
+            for (int i = 0; i < divisors.Length; i++)
+            {
+                if (!map.ContainsKey(divisors[i]))
+                {
+                    map.Add(divisors[i], 0);
+                    for (int j = 0; j < nums.Length; j++)
+                    {
+                        if (nums[j] % divisors[i] == 0) map[divisors[i]]++;
+                    }
+
+                    if (count < map[divisors[i]])
+                    {
+                        count = map[divisors[i]];
+                        result = divisors[i];
+                    }
+                    else if (count == map[divisors[i]])
+                    {
+                        result = Math.Min(result, divisors[i]);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public int AddMinimum(string word)
+        {
+            char[] chars = new char[] { 'a', 'b', 'c' };
+
+            int i = 0;
+            StringBuilder resultString = new StringBuilder();
+
+            while (resultString.Length % 3 != 0 || i < word.Length)
+            {
+                int k = resultString.Length % 3;
+                if (i < word.Length && chars[k] == word[i])
+                {
+                    i++;
+                }
+                resultString.Append(chars[k]);
+            }
+
+            return resultString.Length - word.Length;
+        }
+
+        //2646. Minimize the Total Price of the Trips
+        public int MinimumTotalPrice(int n, int[][] edges, int[] price, int[][] trips)
+        {
+            int result = 0;
+
+            return result;
+        }
         #endregion
     }
 }
