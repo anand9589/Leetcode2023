@@ -1,4 +1,5 @@
 ﻿using Common;
+using System.Collections;
 using System.Text;
 
 namespace April
@@ -626,13 +627,128 @@ namespace April
         }
         #endregion
 
-        #region Problem Day 17
+        #region Problem Day 17 1768. Merge Strings Alternately
+        public string MergeAlternately(string word1, string word2)
+        {
+            if (string.IsNullOrEmpty(word1)) return word2;
+            if (string.IsNullOrEmpty(word2)) return word1;
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            int i = 0;
+            while (i < word1.Length && i < word2.Length)
+            {
+                stringBuilder.Append(word1[i]);
+                stringBuilder.Append(word2[i]);
+                i++;
+            }
+
+            while (i < word1.Length)
+            {
+                stringBuilder.Append(word1[i]);
+                i++;
+            }
+
+            while (i < word2.Length)
+            {
+                stringBuilder.Append(word2[i]);
+                i++;
+            }
+
+            return stringBuilder.ToString();
+        }
         #endregion
 
-        #region Problem Day 18
+        #region Problem Day 18 1372. Longest ZigZag Path in a Binary Tree
+        public int LongestZigZag(TreeNode root)
+        {
+
+            int result = 0;
+            Queue<(TreeNode node, bool isLeft, int count)> q = new Queue<(TreeNode node, bool isLeft, int count)>();
+
+            if (root.left != null)
+            {
+                q.Enqueue((root.left, true, 1));
+            }
+
+            if (root.right != null)
+            {
+                q.Enqueue((root.right, false, 1));
+            }
+
+            while (q.Count > 0)
+            {
+                var p = q.Dequeue();
+                result = Math.Max(result, p.count);
+                if (p.isLeft)
+                {
+                    if (p.node.right != null)
+                    {
+                        q.Enqueue((p.node.right, false, p.count + 1));
+                    }
+
+                    if (p.node.left != null)
+                    {
+                        q.Enqueue((p.node.left, true, 1));
+                    }
+                }
+                else
+                {
+                    if (p.node.left != null)
+                    {
+                        q.Enqueue((p.node.left, true, p.count + 1));
+                    }
+
+                    if (p.node.right != null)
+                    {
+                        q.Enqueue((p.node.right, false, 1));
+                    }
+                }
+            }
+
+            return result;
+        }
         #endregion
 
-        #region Problem Day 19
+        #region Problem Day 19 662. Maximum Width of Binary Tree
+        public int WidthOfBinaryTree(TreeNode root)
+        {
+            Stack<(TreeNode node, int level, int index)> stack = new Stack<(TreeNode node, int level, int index)>();
+            stack.Push((root, 0, 0));
+
+            Dictionary<int, List<int>> map = new Dictionary<int, List<int>>();
+
+            while (stack.Count > 0)
+            {
+                var p = stack.Pop();
+
+                if (!map.ContainsKey(p.level))
+                {
+                    map.Add(p.level, new List<int>());
+                }
+
+                map[p.level].Add(p.index);
+
+                if (p.node.left != null)
+                {
+                    stack.Push((p.node.left, p.level + 1, (p.index * 2 + 1)));
+                }
+                if (p.node.right != null)
+                {
+                    stack.Push((p.node.right, p.level + 1, (p.index * 2 + 2)));
+                }
+            }
+
+            int maxDiff = 0;
+
+            foreach (var key in map.Keys)
+            {
+                maxDiff = Math.Max(maxDiff,Math.Abs( map[key].Last() - map[key].First()));
+            }
+
+
+            return maxDiff+1;
+        }
         #endregion
 
         #region Problem Day 20
