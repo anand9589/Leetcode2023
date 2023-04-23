@@ -557,12 +557,12 @@ namespace April
 
             int length = s.Length;
 
-            int[][] dp = new int[length][];
+            int[][] dp516 = new int[length][];
 
             for (int i = 0; i < length; i++)
             {
-                dp[i] = new int[length];
-                dp[i][i] = 1;
+                dp516[i] = new int[length];
+                dp516[i][i] = 1;
             }
 
 
@@ -572,28 +572,28 @@ namespace April
                 {
                     if (s[j] == s[j + i])
                     {
-                        dp[j][j + i] = 2 + dp[j + 1][j + i - 1];
+                        dp516[j][j + i] = 2 + dp516[j + 1][j + i - 1];
                     }
                     else
                     {
-                        dp[j][j + i] = Math.Max(dp[j][j + i - 1], dp[j + 1][j + i]);
+                        dp516[j][j + i] = Math.Max(dp516[j][j + i - 1], dp516[j + 1][j + i]);
                     }
                 }
             }
-            return dp[0][length - 1];
+            return dp516[0][length - 1];
         }
         #endregion
 
         #region Problem Day 15 2218. Maximum Value of K Coins From Piles
-        int[][] dp;
+        int[][] dp2218;
         public int MaxValueOfCoins(IList<IList<int>> piles, int k)
         {
             int len = piles.Count;
-            dp = new int[len + 1][];
+            dp2218 = new int[len + 1][];
 
             for (int i = 0; i <= len; i++)
             {
-                dp[i] = new int[k + 1];
+                dp2218[i] = new int[k + 1];
             }
             return knapsack(piles, len - 1, k);
         }
@@ -601,7 +601,7 @@ namespace April
         private int knapsack(IList<IList<int>> piles, int v, int k)
         {
             if (v < 0 || k == 0) return 0;
-            if (dp[v][k] != 0) return dp[v][k];
+            if (dp2218[v][k] != 0) return dp2218[v][k];
 
             int m = Math.Min(piles[v].Count, k);
 
@@ -615,7 +615,7 @@ namespace April
                 include = Math.Max(include, sum + knapsack(piles, v - 1, k - i - 1));
             }
 
-            return dp[v][k] = Math.Max(include, exclude);
+            return dp2218[v][k] = Math.Max(include, exclude);
         }
         #endregion
 
@@ -760,7 +760,43 @@ namespace April
         #region Problem Day 22
         #endregion
 
-        #region Problem Day 23
+        #region Problem Day 23 1416. Restore The Array
+        int[] dp;
+        int mod = 1_000_000_007;
+        public int NumberOfArrays(string s, int k)
+        {
+            dp = new int[100001];
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                dp[i] = -1;
+            }
+
+            return helper_NumberOfArrays(s,0, k);
+        }
+
+        private int helper_NumberOfArrays(string s, int i, int k)
+        {
+            if (i == s.Length) return 1;
+
+            if (dp[i] != -1) return dp[i];
+
+            if (s[i] == '0') return 0;
+
+            long n = 0;
+
+            int ans = 0;
+
+            for (int j = i; j < s.Length; j++)
+            {
+                n = n * 10 + s[j] - '0';
+                if (n > k) break;
+                ans += helper_NumberOfArrays(s, j + 1, k);
+                ans %= mod;
+            }
+
+            return dp[i] = ans;
+        }
         #endregion
 
         #region Problem Day 24
