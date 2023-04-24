@@ -743,11 +743,11 @@ namespace April
 
             foreach (var key in map.Keys)
             {
-                maxDiff = Math.Max(maxDiff,Math.Abs( map[key].Last() - map[key].First()));
+                maxDiff = Math.Max(maxDiff, Math.Abs(map[key].Last() - map[key].First()));
             }
 
 
-            return maxDiff+1;
+            return maxDiff + 1;
         }
         #endregion
 
@@ -761,25 +761,25 @@ namespace April
         #endregion
 
         #region Problem Day 23 1416. Restore The Array
-        int[] dp;
-        int mod = 1_000_000_007;
+        int[] dp1416;
+        int mod1416 = 1_000_000_007;
         public int NumberOfArrays(string s, int k)
         {
-            dp = new int[100001];
+            dp1416 = new int[100001];
 
             for (int i = 0; i < s.Length; i++)
             {
-                dp[i] = -1;
+                dp1416[i] = -1;
             }
 
-            return helper_NumberOfArrays(s,0, k);
+            return helper_NumberOfArrays(s, 0, k);
         }
 
         private int helper_NumberOfArrays(string s, int i, int k)
         {
             if (i == s.Length) return 1;
 
-            if (dp[i] != -1) return dp[i];
+            if (dp1416[i] != -1) return dp1416[i];
 
             if (s[i] == '0') return 0;
 
@@ -792,14 +792,36 @@ namespace April
                 n = n * 10 + s[j] - '0';
                 if (n > k) break;
                 ans += helper_NumberOfArrays(s, j + 1, k);
-                ans %= mod;
+                ans %= mod1416;
             }
 
-            return dp[i] = ans;
+            return dp1416[i] = ans;
         }
         #endregion
 
-        #region Problem Day 24
+        #region Problem Day 24 1046. Last Stone Weight
+        public int LastStoneWeight(int[] stones)
+        {
+            var queue = new PriorityQueue<int, int>(Comparer<int>.Create((x, y) => y - x));
+
+            for (int i = 0; i < stones.Length; i++)
+            {
+                queue.Enqueue(stones[i], stones[i]);
+            }
+
+            while (queue.Count>1)
+            {
+                int x1 = queue.Dequeue();
+                int x2 = queue.Dequeue();
+
+                int x3 = x1 - x2;
+
+                if(x3!=0) { queue.Enqueue(x3, x3); }
+
+            }
+
+            return queue.Count == 0 ? 0 : queue.Dequeue();
+        }
         #endregion
 
         #region Problem Day 25
@@ -1201,6 +1223,197 @@ namespace April
 
             return result;
         }
+        #endregion
+
+        #region Weekly 342
+        public int FindDelayedArrivalTime(int arrivalTime, int delayedTime)
+        {
+            return (arrivalTime + delayedTime) % 24;
+        }
+
+        public int SumOfMultiples(int n)
+        {
+            int k = 0;
+
+            for (int i = 3; i <= n; i++)
+            {
+                if (i % 3 == 0 || i % 5 == 0 || i % 7 == 0) k += i;
+            }
+
+            return k;
+        }
+
+        public int[] GetSubarrayBeauty(int[] nums, int k, int x)
+        {
+            int n = nums.Length;
+            int[] res = new int[n - k + 1];
+            PriorityQueue<int> heap = new PriorityQueue<int>();
+            for (int i = 0; i < k; i++)
+            {
+                if (nums[i] < 0)
+                {
+                    heap.Enqueue(nums[i]);
+                }
+            }
+            if (heap.Count >= x)
+            {
+                res[0] = heap.Peek(x - 1);
+            }
+            else
+            {
+                res[0] = 0;
+            }
+            for (int i = k; i < n; i++)
+            {
+                if (nums[i - k] < 0)
+                {
+                    heap.Remove(nums[i - k]);
+                }
+                if (nums[i] < 0)
+                {
+                    heap.Enqueue(nums[i]);
+                }
+                if (heap.Count >= x)
+                {
+                    res[i - k + 1] = heap.Peek(x - 1);
+                }
+                else
+                {
+                    res[i - k + 1] = 0;
+                }
+            }
+            return res;
+        }
+        public class PriorityQueue<T> where T : IComparable<T>
+        {
+            private List<T> _heap;
+
+            public PriorityQueue()
+            {
+                _heap = new List<T>();
+            }
+
+            public int Count
+            {
+                get { return _heap.Count; }
+            }
+
+            public void Enqueue(T item)
+            {
+                _heap.Add(item);
+                int i = _heap.Count - 1;
+                while (i > 0)
+                {
+                    int j = (i - 1) / 2;
+                    if (_heap[j].CompareTo(_heap[i]) <= 0)
+                    {
+                        break;
+                    }
+                    T tmp = _heap[j];
+                    _heap[j] = _heap[i];
+                    _heap[i] = tmp;
+                    i = j;
+                }
+            }
+
+            public T Dequeue()
+            {
+                if (_heap.Count == 0)
+                {
+                    throw new InvalidOperationException("Priority queue is empty.");
+                }
+                T item = _heap[0];
+                int n = _heap.Count - 1;
+                _heap[0] = _heap[n];
+                _heap.RemoveAt(n);
+                n--;
+                int i = 0;
+                while (true)
+                {
+                    int left = 2 * i + 1;
+                    int right = 2 * i + 2;
+                    int smallest = i;
+                    if (left <= n && _heap[left].CompareTo(_heap[smallest]) < 0)
+                    {
+                        smallest = left;
+                    }
+                    if (right <= n && _heap[right].CompareTo(_heap[smallest]) < 0)
+                    {
+                        smallest = right;
+                    }
+                    if (smallest == i)
+                    {
+                        break;
+                    }
+                    T tmp = _heap[i];
+                    _heap[i] = _heap[smallest];
+                    _heap[smallest] = tmp;
+                    i = smallest;
+                }
+                return item;
+            }
+
+            public T Peek()
+            {
+                if (_heap.Count == 0)
+                {
+                    throw new InvalidOperationException("Priority queue is empty.");
+                }
+                return _heap[0];
+            }
+
+            public bool Remove(T item)
+            {
+                int i = _heap.IndexOf(item);
+                if (i == -1)
+                {
+                    return false;
+                }
+                int n = _heap.Count - 1;
+                _heap[i] = _heap[n];
+                _heap.RemoveAt(n);
+                n--;
+                while (true)
+                {
+                    int parent = (i - 1) / 2;
+                    if (i == 0 || _heap[parent].CompareTo(_heap[i]) <= 0)
+                    {
+                        break;
+                    }
+                    T tmp = _heap[parent];
+                    _heap[parent] = _heap[i];
+                    _heap[i] = tmp;
+                    i = parent;
+                }
+                while (true)
+                {
+                    int left = 2 * i + 1;
+                    int right = 2 * i + 2;
+                    if (left > n)
+                    {
+                        break;
+                    }
+                    int smallest = left;
+                    if (right <= n && _heap[right].CompareTo(_heap[smallest]) < 0)
+                    {
+                        smallest = right;
+                    }
+                    if (_heap[i].CompareTo(_heap[smallest]) <= 0)
+                    {
+                        break;
+                    }
+                    T tmp = _heap[i];
+                    _heap[i] = _heap[smallest];
+                    _heap[smallest] = tmp;
+                    i = smallest;
+                }
+                return true;
+            }
+        }
+        #endregion
+
+        #region escape island
+
         #endregion
     }
 }
