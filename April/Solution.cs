@@ -809,14 +809,14 @@ namespace April
                 queue.Enqueue(stones[i], stones[i]);
             }
 
-            while (queue.Count>1)
+            while (queue.Count > 1)
             {
                 int x1 = queue.Dequeue();
                 int x2 = queue.Dequeue();
 
                 int x3 = x1 - x2;
 
-                if(x3!=0) { queue.Enqueue(x3, x3); }
+                if (x3 != 0) { queue.Enqueue(x3, x3); }
 
             }
 
@@ -824,7 +824,44 @@ namespace April
         }
         #endregion
 
-        #region Problem Day 25
+        #region Problem Day 25 2336. Smallest Number in Infinite Set
+
+        public class SmallestInfiniteSet
+        {
+
+            bool[] arr;
+            PriorityQueue<int, int> queue;
+            public SmallestInfiniteSet()
+            {
+                arr = new bool[1001];
+                queue = new PriorityQueue<int, int>(1001);
+
+                for (int i = 0; i < int.MaxValue; i++)
+                {
+                    arr[i] = true;
+                    queue.Enqueue(i + 1, i + 1);
+                }
+            }
+
+            public int PopSmallest()
+            {
+                int i = queue.Dequeue();
+
+                arr[i-1] = false;
+
+                return i;
+            }
+
+            public void AddBack(int num)
+            {
+                if (!arr[num - 1])
+                {
+                    queue.Enqueue(num, num);
+                    arr[num - 1] = true;
+                }
+            }
+        }
+
         #endregion
 
         #region Problem Day 26
@@ -1243,173 +1280,173 @@ namespace April
             return k;
         }
 
-        public int[] GetSubarrayBeauty(int[] nums, int k, int x)
-        {
-            int n = nums.Length;
-            int[] res = new int[n - k + 1];
-            PriorityQueue<int> heap = new PriorityQueue<int>();
-            for (int i = 0; i < k; i++)
-            {
-                if (nums[i] < 0)
-                {
-                    heap.Enqueue(nums[i]);
-                }
-            }
-            if (heap.Count >= x)
-            {
-                res[0] = heap.Peek(x - 1);
-            }
-            else
-            {
-                res[0] = 0;
-            }
-            for (int i = k; i < n; i++)
-            {
-                if (nums[i - k] < 0)
-                {
-                    heap.Remove(nums[i - k]);
-                }
-                if (nums[i] < 0)
-                {
-                    heap.Enqueue(nums[i]);
-                }
-                if (heap.Count >= x)
-                {
-                    res[i - k + 1] = heap.Peek(x - 1);
-                }
-                else
-                {
-                    res[i - k + 1] = 0;
-                }
-            }
-            return res;
-        }
-        public class PriorityQueue<T> where T : IComparable<T>
-        {
-            private List<T> _heap;
+        //public int[] GetSubarrayBeauty(int[] nums, int k, int x)
+        //{
+        //    int n = nums.Length;
+        //    int[] res = new int[n - k + 1];
+        //    PriorityQueue<int> heap = new PriorityQueue<int>();
+        //    for (int i = 0; i < k; i++)
+        //    {
+        //        if (nums[i] < 0)
+        //        {
+        //            heap.Enqueue(nums[i]);
+        //        }
+        //    }
+        //    if (heap.Count >= x)
+        //    {
+        //        res[0] = heap.Peek(x - 1);
+        //    }
+        //    else
+        //    {
+        //        res[0] = 0;
+        //    }
+        //    for (int i = k; i < n; i++)
+        //    {
+        //        if (nums[i - k] < 0)
+        //        {
+        //            heap.Remove(nums[i - k]);
+        //        }
+        //        if (nums[i] < 0)
+        //        {
+        //            heap.Enqueue(nums[i]);
+        //        }
+        //        if (heap.Count >= x)
+        //        {
+        //            res[i - k + 1] = heap.Peek(x - 1);
+        //        }
+        //        else
+        //        {
+        //            res[i - k + 1] = 0;
+        //        }
+        //    }
+        //    return res;
+        //}
+        //public class PriorityQueue<T> where T : IComparable<T>
+        //{
+        //    private List<T> _heap;
 
-            public PriorityQueue()
-            {
-                _heap = new List<T>();
-            }
+        //    public PriorityQueue()
+        //    {
+        //        _heap = new List<T>();
+        //    }
 
-            public int Count
-            {
-                get { return _heap.Count; }
-            }
+        //    public int Count
+        //    {
+        //        get { return _heap.Count; }
+        //    }
 
-            public void Enqueue(T item)
-            {
-                _heap.Add(item);
-                int i = _heap.Count - 1;
-                while (i > 0)
-                {
-                    int j = (i - 1) / 2;
-                    if (_heap[j].CompareTo(_heap[i]) <= 0)
-                    {
-                        break;
-                    }
-                    T tmp = _heap[j];
-                    _heap[j] = _heap[i];
-                    _heap[i] = tmp;
-                    i = j;
-                }
-            }
+        //    public void Enqueue(T item)
+        //    {
+        //        _heap.Add(item);
+        //        int i = _heap.Count - 1;
+        //        while (i > 0)
+        //        {
+        //            int j = (i - 1) / 2;
+        //            if (_heap[j].CompareTo(_heap[i]) <= 0)
+        //            {
+        //                break;
+        //            }
+        //            T tmp = _heap[j];
+        //            _heap[j] = _heap[i];
+        //            _heap[i] = tmp;
+        //            i = j;
+        //        }
+        //    }
 
-            public T Dequeue()
-            {
-                if (_heap.Count == 0)
-                {
-                    throw new InvalidOperationException("Priority queue is empty.");
-                }
-                T item = _heap[0];
-                int n = _heap.Count - 1;
-                _heap[0] = _heap[n];
-                _heap.RemoveAt(n);
-                n--;
-                int i = 0;
-                while (true)
-                {
-                    int left = 2 * i + 1;
-                    int right = 2 * i + 2;
-                    int smallest = i;
-                    if (left <= n && _heap[left].CompareTo(_heap[smallest]) < 0)
-                    {
-                        smallest = left;
-                    }
-                    if (right <= n && _heap[right].CompareTo(_heap[smallest]) < 0)
-                    {
-                        smallest = right;
-                    }
-                    if (smallest == i)
-                    {
-                        break;
-                    }
-                    T tmp = _heap[i];
-                    _heap[i] = _heap[smallest];
-                    _heap[smallest] = tmp;
-                    i = smallest;
-                }
-                return item;
-            }
+        //    public T Dequeue()
+        //    {
+        //        if (_heap.Count == 0)
+        //        {
+        //            throw new InvalidOperationException("Priority queue is empty.");
+        //        }
+        //        T item = _heap[0];
+        //        int n = _heap.Count - 1;
+        //        _heap[0] = _heap[n];
+        //        _heap.RemoveAt(n);
+        //        n--;
+        //        int i = 0;
+        //        while (true)
+        //        {
+        //            int left = 2 * i + 1;
+        //            int right = 2 * i + 2;
+        //            int smallest = i;
+        //            if (left <= n && _heap[left].CompareTo(_heap[smallest]) < 0)
+        //            {
+        //                smallest = left;
+        //            }
+        //            if (right <= n && _heap[right].CompareTo(_heap[smallest]) < 0)
+        //            {
+        //                smallest = right;
+        //            }
+        //            if (smallest == i)
+        //            {
+        //                break;
+        //            }
+        //            T tmp = _heap[i];
+        //            _heap[i] = _heap[smallest];
+        //            _heap[smallest] = tmp;
+        //            i = smallest;
+        //        }
+        //        return item;
+        //    }
 
-            public T Peek()
-            {
-                if (_heap.Count == 0)
-                {
-                    throw new InvalidOperationException("Priority queue is empty.");
-                }
-                return _heap[0];
-            }
+        //    public T Peek()
+        //    {
+        //        if (_heap.Count == 0)
+        //        {
+        //            throw new InvalidOperationException("Priority queue is empty.");
+        //        }
+        //        return _heap[0];
+        //    }
 
-            public bool Remove(T item)
-            {
-                int i = _heap.IndexOf(item);
-                if (i == -1)
-                {
-                    return false;
-                }
-                int n = _heap.Count - 1;
-                _heap[i] = _heap[n];
-                _heap.RemoveAt(n);
-                n--;
-                while (true)
-                {
-                    int parent = (i - 1) / 2;
-                    if (i == 0 || _heap[parent].CompareTo(_heap[i]) <= 0)
-                    {
-                        break;
-                    }
-                    T tmp = _heap[parent];
-                    _heap[parent] = _heap[i];
-                    _heap[i] = tmp;
-                    i = parent;
-                }
-                while (true)
-                {
-                    int left = 2 * i + 1;
-                    int right = 2 * i + 2;
-                    if (left > n)
-                    {
-                        break;
-                    }
-                    int smallest = left;
-                    if (right <= n && _heap[right].CompareTo(_heap[smallest]) < 0)
-                    {
-                        smallest = right;
-                    }
-                    if (_heap[i].CompareTo(_heap[smallest]) <= 0)
-                    {
-                        break;
-                    }
-                    T tmp = _heap[i];
-                    _heap[i] = _heap[smallest];
-                    _heap[smallest] = tmp;
-                    i = smallest;
-                }
-                return true;
-            }
-        }
+        //    public bool Remove(T item)
+        //    {
+        //        int i = _heap.IndexOf(item);
+        //        if (i == -1)
+        //        {
+        //            return false;
+        //        }
+        //        int n = _heap.Count - 1;
+        //        _heap[i] = _heap[n];
+        //        _heap.RemoveAt(n);
+        //        n--;
+        //        while (true)
+        //        {
+        //            int parent = (i - 1) / 2;
+        //            if (i == 0 || _heap[parent].CompareTo(_heap[i]) <= 0)
+        //            {
+        //                break;
+        //            }
+        //            T tmp = _heap[parent];
+        //            _heap[parent] = _heap[i];
+        //            _heap[i] = tmp;
+        //            i = parent;
+        //        }
+        //        while (true)
+        //        {
+        //            int left = 2 * i + 1;
+        //            int right = 2 * i + 2;
+        //            if (left > n)
+        //            {
+        //                break;
+        //            }
+        //            int smallest = left;
+        //            if (right <= n && _heap[right].CompareTo(_heap[smallest]) < 0)
+        //            {
+        //                smallest = right;
+        //            }
+        //            if (_heap[i].CompareTo(_heap[smallest]) <= 0)
+        //            {
+        //                break;
+        //            }
+        //            T tmp = _heap[i];
+        //            _heap[i] = _heap[smallest];
+        //            _heap[smallest] = tmp;
+        //            i = smallest;
+        //        }
+        //        return true;
+        //    }
+        //}
         #endregion
 
         #region escape island
