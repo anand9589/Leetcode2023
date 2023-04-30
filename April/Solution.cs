@@ -847,7 +847,7 @@ namespace April
             {
                 int i = queue.Dequeue();
 
-                arr[i-1] = false;
+                arr[i - 1] = false;
 
                 return i;
             }
@@ -864,19 +864,214 @@ namespace April
 
         #endregion
 
-        #region Problem Day 26
+        #region Problem Day 26 258. Add Digits
+        public int AddDigits(int num)
+        {
+            if (num < 10) return num;
+            int k = 0;
+
+            while (num > 0)
+            {
+                k += num % 10;
+                num /= 10;
+            }
+
+            return AddDigits(k);
+        }
         #endregion
 
-        #region Problem Day 27
+        #region Problem Day 27 319. Bulb Switcher
+        public int BulbSwitch(int n)
+        {
+            if (n == 0) return n;
+            int[] switches = Enumerable.Repeat(1, n + 1).ToArray();
+            int index = 2;
+            while (index < n)
+            {
+                for (int i = 0; i < n; i++)
+                {
+
+                }
+            }
+
+            return switches.Sum() - 1;
+        }
         #endregion
 
         #region Problem Day 28
         #endregion
 
-        #region Problem Day 29
+        #region Problem Day 29 1697. Checking Existence of Edge Length Limited Paths
+        private int[] parent_1697;
+        private int[] rank_1697;
+
+        private int Find_1697(int x)
+        {
+            if (parent_1697[x] != x)
+            {
+                parent_1697[x] = Find_1697(parent_1697[x]);
+            }
+            return parent_1697[x];
+        }
+
+        private void Union_1697(int x, int y)
+        {
+            int px = Find_1697(x);
+            int py = Find_1697(y);
+            if (px != py)
+            {
+                if (rank_1697[px] > rank_1697[py])
+                {
+                    parent_1697[py] = px;
+                }
+                else
+                {
+                    parent_1697[px] = py;
+                    if (rank_1697[px] == rank_1697[py])
+                    {
+                        rank_1697[py]++;
+                    }
+                }
+            }
+        }
+
+        public bool[] DistanceLimitedPathsExist(int n, int[][] edgeList, int[][] queries)
+        {
+            Array.Sort(edgeList, (a, b) => a[2].CompareTo(b[2]));
+            int q = queries.Length;
+            int[] index = new int[q];
+            for (int i = 0; i < q; i++)
+            {
+                index[i] = i;
+            }
+            Array.Sort(index, (a, b) => queries[a][2].CompareTo(queries[b][2]));
+            parent_1697 = new int[n];
+            rank_1697 = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                parent_1697[i] = i;
+                rank_1697[i] = 1;
+            }
+            bool[] res = new bool[q];
+            int k = 0;
+            for (int i = 0; i < q; i++)
+            {
+                int[] query = queries[index[i]];
+                while (k < edgeList.Length && edgeList[k][2] < query[2])
+                {
+                    Union_1697(edgeList[k][0], edgeList[k][1]);
+                    k++;
+                }
+                res[index[i]] = Find_1697(query[0]) == Find_1697(query[1]);
+            }
+            return res;
+        }
         #endregion
 
-        #region Problem Day 30
+        #region Problem Day 30 1579. Remove Max Number of Edges to Keep Graph Fully Traversable
+        public class UnionFind
+        {
+            private int[] parent;
+            private int[] rank;
+            private int count;
+
+            public UnionFind(int n)
+            {
+                parent = new int[n + 1];
+                rank = new int[n + 1];
+                count = n;
+                for (int i = 1; i <= n; i++)
+                {
+                    parent[i] = i;
+                    rank[i] = 1;
+                }
+            }
+
+            public int Find(int x)
+            {
+                if (parent[x] == x)
+                {
+                    return x;
+                }
+                return parent[x] = Find(parent[x]);
+            }
+
+            public bool Union(int x, int y)
+            {
+                int px = Find(x);
+                int py = Find(y);
+                if (px == py)
+                {
+                    return false;
+                }
+                if (rank[px] < rank[py])
+                {
+                    parent[px] = py;
+                }
+                else if (rank[px] > rank[py])
+                {
+                    parent[py] = px;
+                }
+                else
+                {
+                    parent[px] = py;
+                    rank[py]++;
+                }
+                count--;
+                return true;
+            }
+
+            public int GetCount()
+            {
+                return count;
+            }
+        }
+
+        public int MaxNumEdgesToRemove(int n, int[][] edges)
+        {
+            // Sort the edges in descending order of type
+            Array.Sort(edges, (a, b) => b[0] - a[0]);
+
+            // Create two Union-Find data structures, one for Alice and one for Bob
+            UnionFind ufAlice = new UnionFind(n);
+            UnionFind ufBob = new UnionFind(n);
+
+            // Process type 3 edges first
+            int numRemoved = 0;
+            foreach (int[] edge in edges)
+            {
+                if (edge[0] == 3)
+                {
+                    if (ufAlice.Union(edge[1], edge[2]) && ufBob.Union(edge[1], edge[2]))
+                    {
+                        numRemoved++;
+                    }
+                }
+            }
+
+            // Process type 1 and type 2 edges separately
+            foreach (int type in new int[] { 1, 2 })
+            {
+                UnionFind uf = (type == 1) ? ufAlice : ufBob;
+                foreach (int[] edge in edges)
+                {
+                    if (edge[0] == type)
+                    {
+                        if (uf.Union(edge[1], edge[2]))
+                        {
+                            numRemoved++;
+                        }
+                    }
+                }
+                if (uf.GetCount() > 1)
+                {
+                    return -1;
+                }
+            }
+
+            return numRemoved;
+        }
+
         #endregion
 
         #region Problem 10. Regular Expression Matching
@@ -1447,6 +1642,85 @@ namespace April
         //        return true;
         //    }
         //}
+        #endregion
+
+        #region Weekly 343
+        //Determine the Winner of a Bowling Game
+        public int IsWinner(int[] player1, int[] player2)
+        {
+            int n = player1.Length;
+
+            if (n == 1)
+            {
+                return IsWinner(player1[0], player2[0]);
+            }
+
+            int p1;
+            int p2;
+            if (player1[0] == 10 && player2[0] != 10)
+            {
+                p1 = player1[0] + 2 * player1[1];
+                p2 = player2[0] + player2[1];
+            }
+            else if (player1[0] != 10 && player2[0] == 10)
+            {
+
+                p1 = player1[0] + player1[1];
+                p2 = player2[0] + 2 * player2[1];
+
+            }
+            else if (player1[0] == 10 && player2[0] == 10)
+            {
+
+                p1 = player1[0] + 2 * player1[1];
+                p2 = player2[0] + 2 * player2[1];
+            }
+            else
+            {
+                p1 = player1[0] + player1[1];
+                p2 = player1[0] + player2[1];
+            }
+
+            if (n != 2)
+            {
+
+                p1 += getScore(player1, 2);
+                p2 += getScore(player2, 2);
+            }
+
+            return IsWinner(p1, p2);
+        }
+
+        private int getScore(int[] player, int currIndex)
+        {
+            if (currIndex >= player.Length) return 0;
+
+            int score = player[currIndex];
+
+            if (player[currIndex - 1] == 10 || player[currIndex - 2] == 10)
+            {
+                score *= 2;
+            }
+
+            return score + getScore(player, currIndex + 1);
+        }
+
+        public int IsWinner(int p1, int p2)
+        {
+            if (p1 == p2) return 0;
+
+            if (p1 > p2) return 1;
+            return 2;
+        }
+
+        //2661. First Completely Painted Row or Column
+        public int FirstCompleteIndex(int[] arr, int[][] mat)
+        {
+            Dictionary<int, int> rowMap = new Dictionary<int, int>();
+            Dictionary<int,int> colMap = new Dictionary<int, int>();
+
+            Dictionary<int,(int,int)> matMap = new  Dictionary<int,int>();
+        }
         #endregion
 
         #region escape island
