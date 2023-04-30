@@ -1717,9 +1717,110 @@ namespace April
         public int FirstCompleteIndex(int[] arr, int[][] mat)
         {
             Dictionary<int, int> rowMap = new Dictionary<int, int>();
-            Dictionary<int,int> colMap = new Dictionary<int, int>();
+            Dictionary<int, int> colMap = new Dictionary<int, int>();
 
-            Dictionary<int,(int,int)> matMap = new  Dictionary<int,int>();
+            Dictionary<int, (int, int)> matMap = new Dictionary<int, (int, int)>();
+
+            int m = mat.Length;
+            int n = mat[0].Length;
+
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    matMap.Add(mat[i][j], (i, j));
+                }
+            }
+
+            for (int i = 0; i < m; i++)
+            {
+                rowMap.Add(i, n);
+            }
+
+            for (int i = 0; i < n; i++)
+            {
+                colMap.Add(i, m);
+            }
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                (int row, int col) = matMap[arr[i]];
+
+                rowMap[row]--;
+
+
+                colMap[col]--;
+
+                if (rowMap[row] == 0 || colMap[col]==0) return i;
+            }
+
+            return 0;
+        }
+
+        //2662. Minimum Cost of a Path With Special Roads
+        public int[] Parent;
+
+        public int GetRoot(int x)
+        {
+            if (Parent[x] != x)
+            {
+                Parent[x] = GetRoot(Parent[x]);
+            }
+            return Parent[x];
+        }
+
+        public int MinimumCost(int[] start, int[] target, int[][] specialRoads)
+        {
+            int n = specialRoads.Length;
+            Parent = new int[n + 2];
+            for (int i = 0; i < n + 2; i++)
+            {
+                Parent[i] = i;
+            }
+            // Add start and target as special nodes
+            Parent[n] = n;
+            Parent[n + 1] = n + 1;
+
+            // Add special edges to start and target
+            for (int i = 0; i < n; i++)
+            {
+                int x1 = specialRoads[i][0];
+                int y1 = specialRoads[i][1];
+                int x2 = specialRoads[i][2];
+                int y2 = specialRoads[i][3];
+                int cost = specialRoads[i][4];
+                if (x1 == start[0] && y1 == start[1])
+                {
+                    Parent[i] = n;
+                    cost = 0;
+                }
+                if (x2 == target[0] && y2 == target[1])
+                {
+                    Parent[i] = n + 1;
+                    cost = 0;
+                }
+                int r1 = GetRoot(i);
+                int r2 = GetRoot(Parent[i]);
+                if (r1 != r2)
+                {
+                    Parent[r1] = r2;
+                }
+            }
+
+            // Calculate minimum cost using Kruskal's algorithm
+            Array.Sort(specialRoads, (a, b) => a[4] - b[4]);
+            int result = 0;
+            for (int i = 0; i < n; i++)
+            {
+                int r1 = GetRoot(i);
+                int r2 = GetRoot(Parent[i]);
+                if (r1 != r2)
+                {
+                    Parent[r1] = r2;
+                    result += specialRoads[i][4];
+                }
+            }
+            return result + Math.Abs(start[0] - target[0]) + Math.Abs(start[1] - target[1]);
         }
         #endregion
 
