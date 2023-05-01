@@ -5,8 +5,21 @@
         #region Day 1 Problem  1491. Average Salary Excluding the Minimum and Maximum Salary
         public double Average(int[] salary)
         {
+            int maxSalary = int.MinValue;
+            int minSalary = int.MaxValue;
 
-            return (double)(salary.Sum() - salary.Max() - salary.Min()) / (salary.Length - 2);
+            int n = salary.Length;
+            int salarySum = 0;
+            foreach (int i in salary)
+            {
+                salarySum += i;
+
+                minSalary = Math.Min(minSalary, i);
+                maxSalary = Math.Max(maxSalary, i);
+            }
+
+            return (double)(salarySum - maxSalary - minSalary)/(n-2);
+            //return (double)(salary.Sum() - salary.Max() - salary.Min()) / (salary.Length - 2);
         }
         #endregion
         #region Day 2 Problem
