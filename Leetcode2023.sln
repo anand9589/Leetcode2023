@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mar", "Mar\Mar.csproj", "{1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "..\LeetCodeWeekly\LeetCode\Common\Common.csproj", "{5CF66A28-F664-49C4-A973-0088BED4CA03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "April", "April\April.csproj", "{6FF6A7CC-4994-4786-BCFD-F05485EC8A2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "April", "April\April.csproj", "{6FF6A7CC-4994-4786-BCFD-F05485EC8A2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "May", "May\May.csproj", "{DE26087E-38A7-4F9F-8EA3-EF87ACB56996}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{6FF6A7CC-4994-4786-BCFD-F05485EC8A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FF6A7CC-4994-4786-BCFD-F05485EC8A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FF6A7CC-4994-4786-BCFD-F05485EC8A2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE26087E-38A7-4F9F-8EA3-EF87ACB56996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE26087E-38A7-4F9F-8EA3-EF87ACB56996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE26087E-38A7-4F9F-8EA3-EF87ACB56996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE26087E-38A7-4F9F-8EA3-EF87ACB56996}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
