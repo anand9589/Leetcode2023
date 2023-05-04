@@ -1,4 +1,6 @@
-﻿namespace May
+﻿using System.Collections;
+
+namespace May
 {
     public class Solution
     {
@@ -67,10 +69,89 @@
         }
         #endregion
 
-        #region Day 3 Problem
+        #region Day 3 Problem  2215. Find the Difference of Two Arrays
+        public IList<IList<int>> FindDifference(int[] nums1, int[] nums2)
+        {
+            var p = nums1.Except(nums1.Intersect(nums2));
+
+            var q = nums2.Except(nums2.Intersect(nums1));
+            return new List<IList<int>>() { p.ToList(), q.ToList() };
+        }
         #endregion
-        #region Day 4 Problem
+
+        #region Day 4 Problem 649. Dota2 Senate
+        public string PredictPartyVictory(string senate)
+        {
+            int n = senate.Length;
+            int[] counts = new int[2];  // counts[0] is the count of Radiant senators, counts[1] is the count of Dire senators
+            int[] bans = new int[2];    // bans[0] is the number of times Radiant has banned Dire, bans[1] is the number of times Dire has banned Radiant
+            char[] cans = senate.ToCharArray();
+            foreach (char c in senate)
+            {
+                if (c == 'R')
+                {
+                    counts[0]++;
+                }
+                else
+                {
+                    counts[1]++;
+                }
+            }
+
+            while (counts[0] > 0 && counts[1] > 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    if (cans[i] == ' ') continue;  // this senator has lost their right
+                    if (cans[i] == 'R')
+                    {
+                        if (bans[0] > 0)
+                        {
+                            bans[0]--;
+                            cans[i] = ' ';
+                            counts[0]--;
+                        }
+                        else
+                        {
+                            bans[1]++;
+                        }
+                    }
+                    else
+                    {
+                        if (bans[1] > 0)
+                        {
+                            bans[1]--;
+                            cans[i] = ' ';
+                            counts[1]--;
+                        }
+                        else
+                        {
+                            bans[0]++;
+                        }
+                    }
+                }
+            }
+
+            return counts[0] > 0 ? "Radiant" : "Dire";
+        }
+        public string PredictPartyVictory_V1(string senate)
+        {
+            char c = senate[0];
+            int n = senate.Length;
+
+            int rCount = senate.Where(x => x == 'R').Count();
+
+            int dCount = n - rCount;
+
+            if (rCount != dCount)
+            {
+                c = rCount > dCount ? 'R' : 'D';
+            }
+
+            return c == 'R' ? "Radiant" : "Dire";
+        }
         #endregion
+
         #region Day 5 Problem
         #endregion
         #region Day 6 Problem
