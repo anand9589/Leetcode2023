@@ -152,7 +152,61 @@ namespace May
         }
         #endregion
 
-        #region Day 5 Problem
+        #region Day 5 Problem 1456. Maximum Number of Vowels in a Substring of Given Length
+        public int MaxVowels(string s, int k)
+        {
+            int vowel_count = 0;
+            for (int i = 0; i < k; i++)
+            {
+                switch (s[i])
+                {
+                    case 'a':
+                    case 'e':
+                    case 'i':
+                    case 'o':
+                    case 'u':
+                        vowel_count++;
+                        break;
+                    default: break;
+                }
+            }
+
+            int result = vowel_count;
+            int startIndex = 1;
+            while (startIndex + k - 1 < s.Length)
+            {
+                switch (s[startIndex-1])
+                {
+                    case 'a':
+                    case 'e':
+                    case 'i':
+                    case 'o':
+                    case 'u':
+                        vowel_count--;
+                        break;
+                    default: break;
+                }
+
+                switch (s[startIndex + k - 1])
+                {
+                    case 'a':
+                    case 'e':
+                    case 'i':
+                    case 'o':
+                    case 'u':
+                        vowel_count++;
+                        result = Math.Max(result, vowel_count);
+                        break;
+                    default: break;
+                }
+
+                startIndex++;
+
+
+            }
+
+            return result;
+        }
         #endregion
         #region Day 6 Problem
         #endregion
