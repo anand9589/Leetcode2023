@@ -175,7 +175,7 @@ namespace May
             int startIndex = 1;
             while (startIndex + k - 1 < s.Length)
             {
-                switch (s[startIndex-1])
+                switch (s[startIndex - 1])
                 {
                     case 'a':
                     case 'e':
@@ -208,10 +208,74 @@ namespace May
             return result;
         }
         #endregion
-        #region Day 6 Problem
+
+        #region Day 6 Problem 1498. Number of Subsequences That Satisfy the Given Sum Condition
+        public int NumSubseq(int[] nums, int target)
+        {
+            int mod = 1000000007;
+            int n = nums.Length;
+            Array.Sort(nums);
+            int i = 0, j = n - 1;
+            int res = 0;
+            int[] pows = new int[n];
+            pows[0] = 1;
+            for (int k = 1; k < n; k++)
+            {
+                pows[k] = (pows[k - 1] * 2) % mod;
+            }
+            while (i <= j)
+            {
+                if (nums[i] + nums[j] <= target)
+                {
+                    res = (res + pows[j - i]) % mod;
+                    i++;
+                }
+                else
+                {
+                    j--;
+                }
+            }
+            return res;
+        }
         #endregion
-        #region Day 7 Problem
+
+        #region Day 7 Problem 1964. Find the Longest Valid Obstacle Course at Each Position
+        public int[] LongestObstacleCourseAtEachPosition(int[] obstacles)
+        {
+            int n = obstacles.Length;
+            int[] ans = new int[n];
+            List<int> courses = new List<int>();
+            for (int i = 0; i < n; i++)
+            {
+                int h = obstacles[i];
+                int lo = 0, hi = courses.Count - 1;
+                while (lo <= hi)
+                {
+                    int mid = (lo + hi) / 2;
+                    if (courses[mid] <= h)
+                    {
+                        lo = mid + 1;
+                    }
+                    else
+                    {
+                        hi = mid - 1;
+                    }
+                }
+                int len = lo + 1;
+                if (lo < courses.Count)
+                {
+                    courses[lo] = h;
+                }
+                else
+                {
+                    courses.Add(h);
+                }
+                ans[i] = len;
+            }
+            return ans;
+        }
         #endregion
+
         #region Day 8 Problem
         #endregion
         #region Day 9 Problem
