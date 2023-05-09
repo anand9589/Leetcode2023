@@ -317,8 +317,7 @@ namespace May
                 int y = round;
                 int y1 = n - round;
                 int x1 = m - round;
-                //lst.Add(matrix[x][y]);
-                //y++;
+
                 while (y < y1)
                 {
                     lst.Add(matrix[x][y]);
