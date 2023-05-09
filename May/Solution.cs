@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace May
 {
@@ -276,10 +277,152 @@ namespace May
         }
         #endregion
 
-        #region Day 8 Problem
+        #region Day 8 Problem 1572. Matrix Diagonal Sum
+        public int DiagonalSum(int[][] mat)
+        {
+            HashSet<(int, int)> values = new HashSet<(int, int)>();
+
+            for (int i = 0; i < mat.Length; i++)
+            {
+                values.Add((i, i));
+            }
+
+            int j = 0;
+            for (int i = mat.Length - 1; i >= 0; i--, j++)
+            {
+                values.Add((j, i));
+            }
+            int sum = 0;
+            foreach (var item in values)
+            {
+                sum += mat[item.Item1][item.Item2];
+            }
+            return sum;
+        }
         #endregion
-        #region Day 9 Problem
+
+        #region Day 9 Problem 54. Spiral Matrix
+
+        public IList<int> SpiralOrder(int[][] matrix)
+        {
+            IList<int> lst = new List<int>();
+
+            int m = matrix.Length;
+            int n = matrix[0].Length;
+            int totalCount = m * n;
+            int round = 0;
+            while (lst.Count < totalCount)
+            {
+                int x = round;
+                int y = round;
+                int y1 = n - round;
+                int x1 = m - round;
+                //lst.Add(matrix[x][y]);
+                //y++;
+                while (y < y1)
+                {
+                    lst.Add(matrix[x][y]);
+                    y++;
+                }
+
+                if (lst.Count == totalCount) break;
+
+                y--;
+                x++;
+
+                while (x < x1)
+                {
+                    lst.Add(matrix[x][y]);
+                    x++;
+                }
+
+                if (lst.Count == totalCount) break;
+
+                x--;
+                y--;
+
+
+                while (y >= round)
+                {
+                    lst.Add(matrix[x][y]);
+                    y--;
+                }
+
+                if (lst.Count == totalCount) break;
+                y++;
+                x--;
+
+
+                while (x > round)
+                {
+                    lst.Add(matrix[x][y]);
+                    x--;
+                }
+
+                round++;
+            }
+
+            return lst;
+        }
+
+        public IList<int> SpiralOrder_V1(int[][] matrix)
+        {
+            IList<int> lst = new List<int>();
+            bool[][] visited = new bool[matrix.Length][];
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                visited[i] = new bool[matrix[i].Length];
+            }
+            int m = matrix.Length;
+            int n = matrix[0].Length;
+            int x = 0;
+            int y = 0;
+            int round = 0;
+            while (lst.Count < m * n)
+            {
+                x = round;
+                y = round;
+                while (y < n && !visited[x][y])
+                {
+                    lst.Add(matrix[x][y]);
+                    visited[x][y] = true;
+                    y++;
+                }
+                y = n - 1;
+                x = x + 1;
+
+                while (x < m && !visited[x][y])
+                {
+                    lst.Add(matrix[x][y]);
+                    visited[x][y] = true;
+                    x++;
+                }
+                x = m - 1;
+                y = y - 1;
+
+                while (y >= round && !visited[x][y])
+                {
+                    lst.Add(matrix[x][y]);
+                    visited[x][y] = true;
+                    y--;
+                }
+                y = round;
+                x = x - 1;
+
+                while (x > round && !visited[x][y])
+                {
+                    lst.Add(matrix[x][y]);
+                    visited[x][y] = true;
+                    x--;
+                }
+
+                round++;
+            }
+
+            return lst;
+        }
         #endregion
+
         #region Day 10 Problem
         #endregion
         #region Day 11 Problem
@@ -323,6 +466,123 @@ namespace May
         #region Day 30 Problem
         #endregion
         #region Day 31 Problem
+        #endregion
+
+        #region  Problem 2670. Find the Distinct Difference Array
+        public int[] DistinctDifferenceArray(int[] nums)
+        {
+            int n = nums.Length;
+            int[] diff = new int[n];
+
+            Dictionary<int, List<int>> map = new Dictionary<int, List<int>>();
+            for (int i = 0; i < n; i++)
+            {
+                if (!map.ContainsKey(nums[i]))
+                {
+                    map.Add(nums[i], new List<int>());
+                }
+                map[nums[i]].Add(i);
+            }
+            HashSet<int> prefix = new HashSet<int>();
+            for (int i = 0; i < n; i++)
+            {
+                int k = nums[i];
+                prefix.Add(k);
+
+                map[k].Remove(i);
+
+                if (map[k].Count == 0) map.Remove(k);
+
+                diff[i] = prefix.Count - map.Count;
+            }
+            return diff;
+        }
+
+        #endregion
+
+        #region Problem 2671. Frequency Tracker
+        public class FrequencyTracker
+        {
+            readonly Dictionary<int, int> numbermap;
+            readonly Dictionary<int, List<int>> frequencyMap;
+            public FrequencyTracker()
+            {
+                numbermap = new Dictionary<int, int>();
+                frequencyMap = new Dictionary<int, List<int>>();
+            }
+
+            public void Add(int number)
+            {
+                int freq = 1;
+                if (!numbermap.ContainsKey(number))
+                {
+                    numbermap.Add(number, 0);
+                }
+                else
+                {
+                    freq = numbermap[number];
+
+                    frequencyMap[freq].Remove(number);
+                    if (frequencyMap[freq].Count == 0)
+                    {
+                        frequencyMap.Remove(freq);
+                    }
+                }
+                numbermap[number]++;
+
+                freq = numbermap[number];
+                updatefrequencymap(freq, number);
+            }
+
+            public void DeleteOne(int number)
+            {
+                if (numbermap.ContainsKey(number))
+                {
+                    int oldfreq = numbermap[number];
+                    frequencyMap[oldfreq].Remove(number);
+
+                    if (frequencyMap[oldfreq].Count == 0) frequencyMap.Remove(oldfreq);
+
+                    if (oldfreq == 1)
+                    {
+                        numbermap.Remove(number);
+                    }
+                    else
+                    {
+                        numbermap[number]--;
+
+                        updatefrequencymap(oldfreq - 1, number);
+                    }
+
+
+                }
+            }
+
+            public bool HasFrequency(int frequency)
+            {
+                return frequencyMap.ContainsKey(frequency);
+            }
+
+            private void updatefrequencymap(int freq, int number)
+            {
+                if (!frequencyMap.ContainsKey(freq))
+                {
+                    frequencyMap.Add(freq, new List<int>());
+                }
+                frequencyMap[freq].Add(number);
+            }
+        }
+        #endregion
+
+        #region Problem 2672. Number of Adjacent Elements With the Same Color
+        public int[] ColorTheArray(int n, int[][] queries)
+        {
+            int[] nums = new int[n]; // initialize the array with zeros
+            int[] ans = new int[queries.Length]; // initialize the answer array
+
+
+            return ans;
+        }
         #endregion
     }
 }
