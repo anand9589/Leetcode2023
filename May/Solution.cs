@@ -422,11 +422,122 @@ namespace May
         }
         #endregion
 
-        #region Day 10 Problem
+        #region Day 10 Problem 59. Spiral Matrix II
+        public int[][] GenerateMatrix(int n)
+        {
+            int[][] arr = new int[n][];
+            for (int i = 0; i < n; i++)
+            {
+                arr[i] = new int[n];
+            }
+            int cur = 1;
+            int round = 0;
+            while (cur <= n * n)
+            {
+                int x = round;
+
+                int y = round;
+
+                int x1 = n - round;
+
+                int y1 = n - round;
+
+                while (y < y1)
+                {
+                    arr[x][y] = cur;
+                    cur++;
+                    y++;
+                }
+
+                y--;
+                x++;
+
+                while (x < x1)
+                {
+                    arr[x][y] = cur;
+                    cur++;
+                    x++;
+                }
+
+
+                x--;
+                y--;
+                while (y >= round)
+                {
+                    arr[x][y] = cur;
+                    cur++;
+                    y--;
+                }
+
+                x--;
+                y++;
+
+                while (x > round)
+                {
+                    arr[x][y] = cur;
+                    cur++;
+                    x--;
+                }
+                round++;
+            }
+
+            return arr;
+        }
         #endregion
-        #region Day 11 Problem
+
+        #region Day 11 Problem 1035. Uncrossed Lines
+        public int MaxUncrossedLines(int[] nums1, int[] nums2)
+        {
+            int m = nums1.Length;
+            int n = nums2.Length;
+            int[,] dp = new int[m + 1, n + 1];
+
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (nums1[i] == nums2[j])
+                    {
+                        dp[i + 1, j + 1] = dp[i, j] + 1;
+                    }
+                    else
+                    {
+                        dp[i + 1, j + 1] = Math.Max(dp[i + 1, j], dp[i, j + 1]);
+                    }
+                }
+            }
+
+            return dp[m, n];
+        }
         #endregion
-        #region Day 12 Problem
+
+        #region Day 12 Problem 2140. Solving Questions With Brainpower
+        public long MostPoints(int[][] questions)
+        {
+            long[] dp = new long[questions.Length];
+            for (int i = 0; i < questions.Length; i++)
+            {
+                dp[i] = questions[i][0];
+            }
+
+            for (int i = dp.Length-2; i >= 0; i--)
+            {
+                dp[i] = dp[i + 1];
+
+                long cur = questions[i][0];
+
+                int nextIndex = i + 1 + questions[i][1];
+
+                if (nextIndex < dp.Length)
+                {
+                    cur += dp[nextIndex];
+                }
+
+                dp[i] = Math.Max(cur, dp[i]);
+            }
+
+            return dp[0];
+        }
         #endregion
         #region Day 13 Problem
         #endregion
