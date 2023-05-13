@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.ObjectModel;
-
-namespace May
+﻿namespace May
 {
     public class Solution
     {
@@ -543,7 +540,32 @@ namespace May
         #region Day 13 Problem 2466. Count Ways To Build Good Strings
         public int CountGoodStrings(int low, int high, int zero, int one)
         {
+            const int Mod = 1000000007;
 
+            long[] dp = new long[100001];
+            dp[0] = 1;
+
+            for (int i = 1; i <= 100000; i++)
+            {
+               if(i-zero >= 0)
+                {
+                    dp[i] += dp[i - zero];
+                }
+               if(i-one >= 0)
+                {
+                    dp[i] += dp[i - one];
+                }
+                dp[i]%=Mod;
+            }
+
+            int res = 0;
+
+            for (int i = low; i <= high; i++)
+            {
+                res = (int)((res + dp[i]) % Mod);
+            }
+
+            return res;
         }
         #endregion
         #region Day 14 Problem
