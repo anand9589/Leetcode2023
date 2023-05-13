@@ -539,7 +539,12 @@ namespace May
             return dp[0];
         }
         #endregion
-        #region Day 13 Problem
+
+        #region Day 13 Problem 2466. Count Ways To Build Good Strings
+        public int CountGoodStrings(int low, int high, int zero, int one)
+        {
+
+        }
         #endregion
         #region Day 14 Problem
         #endregion
