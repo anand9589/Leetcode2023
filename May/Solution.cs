@@ -517,7 +517,7 @@
                 dp[i] = questions[i][0];
             }
 
-            for (int i = dp.Length-2; i >= 0; i--)
+            for (int i = dp.Length - 2; i >= 0; i--)
             {
                 dp[i] = dp[i + 1];
 
@@ -547,15 +547,15 @@
 
             for (int i = 1; i <= 100000; i++)
             {
-               if(i-zero >= 0)
+                if (i - zero >= 0)
                 {
                     dp[i] += dp[i - zero];
                 }
-               if(i-one >= 0)
+                if (i - one >= 0)
                 {
                     dp[i] += dp[i - one];
                 }
-                dp[i]%=Mod;
+                dp[i] %= Mod;
             }
 
             int res = 0;
@@ -568,7 +568,74 @@
             return res;
         }
         #endregion
-        #region Day 14 Problem
+
+        #region Day 14 Problem 1799. Maximize Score After N Operations
+        public int MaxScore(int[] nums)
+        {
+            var n = nums.Length;
+            var gcdVal = CalculateGCDValues(nums);
+
+            var dp = new int[1 << n];
+
+            for (var i = 0; i < 1 << n; ++i)
+            {
+                var bits = GetSetBitsCount(i);
+                if (bits % 2 != 0)
+                {
+                    // Skip odd numbers
+                    continue;
+                }
+
+                foreach (var (k, v) in gcdVal)
+                {
+                    if ((k & i) != 0)
+                    {
+                        // Skip overlapping numbers
+                        continue;
+                    }
+
+                    dp[i ^ k] = Math.Max(dp[i ^ k], dp[i] + v * (bits / 2 + 1));
+                }
+            }
+
+            return dp[(1 << n) - 1];
+        }
+
+        private static Dictionary<int, int> CalculateGCDValues(int[] nums)
+        {
+            var gcdVal = new Dictionary<int, int>();
+            var n = nums.Length;
+
+            for (var i = 0; i < n; ++i)
+            {
+                for (var j = i + 1; j < n; ++j)
+                {
+                    var key = (1 << i) + (1 << j);
+                    var value = GCD(nums[i], nums[j]);
+                    gcdVal.Add(key, value);
+                }
+            }
+
+            return gcdVal;
+        }
+
+        private static int GetSetBitsCount(int num)
+        {
+            var count = 0;
+            while (num > 0)
+            {
+                if ((num & 1) == 1)
+                    count++;
+                num >>= 1;
+            }
+            return count;
+        }
+
+        private static int GCD(int a, int b)
+        {
+            return b == 0 ? a : GCD(b, a % b);
+        }
+
         #endregion
         #region Day 15 Problem
         #endregion
