@@ -1,4 +1,8 @@
-﻿namespace May
+﻿using Common;
+using System.Collections;
+using System.Text.RegularExpressions;
+
+namespace May
 {
     public class Solution
     {
@@ -637,39 +641,578 @@
         }
 
         #endregion
-        #region Day 15 Problem
+
+        #region Day 15 Problem 1721. Swapping Nodes in a Linked List
+
+        public ListNode SwapNodes(ListNode head, int k)
+        {
+            k = k - 1;
+
+            ListNode node1 = head;
+
+            while (k > 0)
+            {
+                node1 = node1.next;
+                k--;
+            }
+
+            ListNode first = node1;
+
+            ListNode node2 = head;
+
+            while (first.next != null)
+            {
+                node2 = node2.next;
+                first = first.next;
+            }
+
+            int temp = node1.val;
+            node1.val = node2.val;
+            node2.val = temp;
+
+            return head;
+        }
         #endregion
-        #region Day 16 Problem
+
+        #region Day 16 Problem 24. Swap Nodes in Pairs
+        public ListNode SwapPairs(ListNode head)
+        {
+
+            if (head != null && head.next != null)
+            {
+                int temp = head.val;
+                head.val = head.next.val;
+                head.next.val = temp;
+
+                head.next.next = SwapPairs(head.next.next);
+            }
+            return head;
+        }
         #endregion
-        #region Day 17 Problem
+
+        #region Day 17 Problem 2130. Maximum Twin Sum of a Linked List
+        public int PairSum(ListNode head)
+        {
+            int res = 0;
+            List<int> lst = new List<int>();
+
+            ListNode node = head;
+
+            while (node != null)
+            {
+                lst.Add(node.val);
+                node = node.next;
+                lst.Add(node.val);
+                node = node.next;
+            }
+
+            for (int i = 0; i < lst.Count / 2; i++)
+            {
+                res = Math.Max(res, lst[i] + lst[lst.Count - i - 1]);
+            }
+
+            return res;
+        }
         #endregion
-        #region Day 18 Problem
+
+        #region Day 18 Problem 1557. Minimum Number of Vertices to Reach All Nodes
+
+        public IList<int> FindSmallestSetOfVertices(int n, IList<IList<int>> edges)
+        {
+            HashSet<int> unreachableNodes = new HashSet<int>();
+
+            foreach (var edge in edges)
+            {
+                int to = edge[1];
+                unreachableNodes.Add(to);
+            }
+
+            List<int> result = new List<int>();
+
+            for (int i = 0; i < n; i++)
+            {
+                if (!unreachableNodes.Contains(i))
+                {
+                    result.Add(i);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
+
         #region Day 19 Problem
         #endregion
+
         #region Day 20 Problem
         #endregion
-        #region Day 21 Problem
+
+        #region Day 21 Problem 934. Shortest Bridge
+        public int ShortestBridge(int[][] grid)
+        {
+            int result = 0;
+
+
+            Queue<(int x, int y)> q = new Queue<(int x, int y)>();
+            int[][] dp = new int[grid.Length][];
+            for (int i = 0; i < grid.Length; i++)
+            {
+                dp[i] = new int[grid[i].Length];
+                for (int j = 0; j < grid[i].Length; j++)
+                {
+                    if (grid[i][j] == 1)
+                    {
+                        q.Enqueue((i, j));
+                        dp[i][j] = 0;
+
+                    }
+                    else
+                    {
+                        dp[i][j] = int.MaxValue;
+                    }
+                }
+            }
+
+
+            while (q.Count > 0)
+            {
+                var p = q.Dequeue();
+                int val = dp[p.x][p.y];
+                result = Math.Max(result, val);
+                int newVal = val + 1;
+
+                checkAndAdd(dp, q, p.x - 1, p.y, newVal);
+                checkAndAdd(dp, q, p.x, p.y - 1, newVal);
+                checkAndAdd(dp, q, p.x + 1, p.y, newVal);
+                checkAndAdd(dp, q, p.x, p.y + 1, newVal);
+            }
+
+
+            //Queue<(int x, int y, int w)> q2 = new Queue<(int x, int y, int w)>();
+            //while (q.Count > 0)
+            //{
+            //    var p = q.Dequeue();
+            //    q2.Enqueue((p.x, p.y, 0));
+            //    //i-1 j
+            //    //i+1 j
+            //    //
+            //    checkAndAdd(grid, q, p.x - 1, p.y);
+            //    checkAndAdd(grid, q, p.x + 1, p.y);
+            //    checkAndAdd(grid, q, visited, p.x, p.y - 1);
+            //    checkAndAdd(grid, q, visited, p.x, p.y + 1);
+
+            //}
+
+            //while (q2.Count > 0)
+            //{
+            //    var s = q2.Dequeue();
+            //}
+
+            return result;
+        }
+
+        private void checkAndAdd(int[][] dp, Queue<(int x, int y)> q, int x, int y, int val)
+        {
+            if (x < 0 || y < 0 || x >= dp.Length || y >= dp[0].Length || dp[x][y] <= val) return;
+
+            dp[x][y] = val;
+            q.Enqueue((x, y));
+        }
+
+
         #endregion
-        #region Day 22 Problem
+
+        #region Day 22 Problem  347. Top K Frequent Elements
+
+        public int[] TopKFrequent(int[] nums, int k)
+        {
+            Dictionary<int, int> map = new Dictionary<int, int>();
+
+            foreach (int num in nums)
+            {
+                if (!map.ContainsKey(num))
+                {
+                    map.Add(num, 0);
+                }
+                map[num]++;
+            }
+
+            PriorityQueue<int, int> pq = new PriorityQueue<int, int>(Comparer<int>.Create((a, b) => b - a));
+
+            foreach (var key in map.Keys)
+            {
+                pq.Enqueue(key, map[key]);
+            }
+            int[] res = new int[k];
+
+            for (int i = 0; i < k; i++)
+            {
+                res[i] = pq.Dequeue();
+            }
+            return res;
+        }
+
         #endregion
-        #region Day 23 Problem
+
+        #region Day 23 Problem 703. Kth Largest Element in a Stream
+        public class KthLargest
+        {
+
+            PriorityQueue<int, int> pq;
+            readonly int size = 0;
+            public KthLargest(int k, int[] nums)
+            {
+                size = k;
+                pq = new PriorityQueue<int, int>();
+
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    pq.Enqueue(nums[i], nums[i]);
+                }
+
+                while (pq.Count > k)
+                {
+                    pq.Dequeue();
+                }
+            }
+
+            public int Add(int val)
+            {
+                if (pq.Count < size)
+                {
+                    pq.Enqueue(val, val);
+                }
+                else if (pq.Peek() < val)
+                {
+
+                    pq.EnqueueDequeue(val, val);
+                }
+                return pq.Peek();
+            }
+        }
         #endregion
-        #region Day 24 Problem
+
+        #region Day 24 Problem 2542. Maximum Subsequence Score
+        public long MaxScore(int[] nums1, int[] nums2, int k)
+        {
+            long result = 0;
+
+
+            List<(int val, int rank)> lst = new List<(int val, int rank)>();
+
+            for (int i = 0; i < nums1.Length; i++)
+            {
+                lst.Add((nums1[i], nums2[i]));
+            }
+
+            lst = lst.OrderByDescending(x => x.rank).ToList();
+
+            long sum = 0;
+            PriorityQueue<int, int> pq = new PriorityQueue<int, int>();
+            for (int i = 0; i < k; i++)
+            {
+                sum += lst[i].val;
+                pq.Enqueue(lst[i].val, lst[i].val);
+            }
+
+            result = sum * lst[k - 1].rank;
+
+
+            for (int i = k; i < lst.Count; i++)
+            {
+                int v = lst[i].val;
+                int r = lst[i].rank;
+
+                var c = pq.Dequeue();
+
+                sum -= c;
+                sum += v;
+                pq.Enqueue(v, v);
+
+                result = Math.Max(result, sum * r);
+            }
+
+            return result;
+        }
         #endregion
-        #region Day 25 Problem
+
+        #region Day 25 Problem 837. New 21 Game
+        public double New21Game(int n, int k, int maxPts)
+        {
+            if (k == 0) return 1;
+            double result = 0;
+            double[] dp = new double[n + 1];
+
+            dp[0] = 1;
+            double temp = 1;
+            for (int i = 1; i <= n; i++)
+            {
+                dp[i] = temp / maxPts;
+
+                if (i < k)
+                {
+                    temp += dp[i];
+                }
+
+                if (i - maxPts >= 0 && i - maxPts < k)
+                {
+                    temp -= dp[i - maxPts];
+                }
+            }
+
+            for (int i = k; i <= n; i++)
+            {
+                result += dp[i];
+            }
+
+            return result;
+        }
         #endregion
-        #region Day 26 Problem
+
+        #region Day 26 Problem 1140. Stone Game II
+        public int StoneGameII(int[] piles)
+        {
+            int[,,] dp = new int[2, piles.Length + 1, piles.Length + 1];
+
+            for (int p = 0; p < 2; p++)
+            {
+                for (int i = 0; i <= piles.Length; i++)
+                {
+                    for (int j = 0; j <= piles.Length; j++)
+                    {
+                        dp[p, i, j] = -1;
+                    }
+                }
+            }
+
+            return StoneGameII_Helper(dp, piles, 0, 0, 1);
+        }
+
+        private int StoneGameII_Helper(int[,,] dp, int[] piles, int p, int i, int j)
+        {
+            if (i == piles.Length) return 0;
+
+            if (dp[p, i, j] != -1) return dp[p, i, j];
+
+            int result = p == 1 ? 1000000 : -1;
+            int temp = 0;
+
+            for (int x = 1; x <= Math.Min(2 * j, piles.Length - i); x++)
+            {
+                temp += piles[i + x - 1];
+
+                if (p == 0)
+                {
+                    result = Math.Max(result, temp + StoneGameII_Helper(dp, piles, 1, i + x, Math.Max(j, x)));
+                }
+                else
+                {
+                    result = Math.Min(result, StoneGameII_Helper(dp, piles, 0, i + x, Math.Max(j, x)));
+                }
+            }
+
+            return dp[p, i, j] = result;
+        }
         #endregion
-        #region Day 27 Problem
+
+        #region Day 27 Problem 1406. Stone Game III
+
+        public string StoneGameIII(int[] stoneValue)
+        {
+            int[] dp = new int[stoneValue.Length + 1];
+
+            for (int i = stoneValue.Length - 1; i >= 0; i--)
+            {
+                dp[i] = stoneValue[i] - dp[i + 1];
+
+                if (i + 2 <= stoneValue.Length)
+                {
+                    dp[i] = Math.Max(dp[i], stoneValue[i + 1] + stoneValue[i] - dp[i + 2]);
+                }
+                if (i + 3 <= stoneValue.Length)
+                {
+                    dp[i] = Math.Max(dp[i], stoneValue[i] + stoneValue[i + 1] + stoneValue[i + 2] - dp[i + 3]);
+
+                }
+            }
+
+            return dp[0] == 0 ? "Tie" : dp[0] > 0 ? "Alice" : "Bob";
+        }
         #endregion
-        #region Day 28 Problem
+
+        #region Day 28 Problem 1547. Minimum Cost to Cut a Stick
+
+        int[,] dp;
+        int[] newCuts;
+        public int MinCost(int n, int[] cuts)
+        {
+            int m = cuts.Length;
+            newCuts = new int[m + 2];
+
+            Array.Copy(cuts, 0, newCuts, 1, m);
+            newCuts[m + 1] = n;
+            Array.Sort(newCuts);
+
+            dp = new int[m + 2, m + 2];
+
+            for (int i = 0; i < m + 2; i++)
+            {
+                for (int j = 0; j < m + 2; j++)
+                {
+                    dp[i, j] = -1;
+                }
+            }
+            return cost(0, newCuts.Length - 1);
+        }
+
+        private int cost(int left, int right)
+        {
+            if (dp[left, right] != -1) return dp[left, right];
+
+            if (right - left == 1) return 0;
+
+            int result = int.MaxValue;
+
+            for (int mid = left+1; mid < right; mid++)
+            {
+                int c = cost(left, mid) + cost(mid, right) + newCuts[right] - newCuts[left];
+
+                result = Math.Min(result, c);   
+            }
+
+            return dp[left,right] = result;
+        }
         #endregion
-        #region Day 29 Problem
+
+        #region Day 29 Problem 1603. Design Parking System
+        public class ParkingSystem
+        {
+            private readonly int big;
+            private readonly int medium;
+            private readonly int small;
+
+            private int bigCars;
+            private int mediumCars;
+            private int smallCars;
+            public ParkingSystem(int big, int medium, int small)
+            {
+                this.big = big;
+                this.medium = medium;
+                this.small = small;
+                bigCars = 0;
+                mediumCars = 0;
+                smallCars = 0;
+            }
+
+            public bool AddCar(int carType)
+            {
+                switch (carType)
+                {
+                    case 1:
+                        if (bigCars == big) return false;
+                        bigCars++;
+                        break;
+                    case 2:
+                        if (mediumCars == medium) return false;
+                        mediumCars++;
+                        break;
+                    case 3:
+                        if(smallCars == small) return false;
+                        smallCars++;
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        }
         #endregion
-        #region Day 30 Problem
+
+        #region Day 30 Problem 705. Design HashSet
+        public class MyHashSet
+        {
+            BitArray arr;
+
+            public MyHashSet()
+            {
+                arr = new BitArray(1000001);
+            }
+
+            public void Add(int key)
+            {
+                arr[key] = true;
+            }
+
+            public void Remove(int key)
+            {
+                arr[key] = false;
+            }
+
+            public bool Contains(int key)
+            {
+                return arr[key];
+            }
+        }
+
+        /**
+         * Your MyHashSet object will be instantiated and called as such:
+         * MyHashSet obj = new MyHashSet();
+         * obj.Add(key);
+         * obj.Remove(key);
+         * bool param_3 = obj.Contains(key);
+         */
         #endregion
-        #region Day 31 Problem
+
+        #region Day 31 Problem 1396. Design Underground System
+        public class UndergroundSystem
+        {
+            Dictionary<int, (string station, int time)> dct;
+            Dictionary<string, List<int>> dctTimes;
+            public UndergroundSystem()
+            {
+                dct = new Dictionary<int, (string station, int time)>();
+                dctTimes = new Dictionary<string, List<int>>();
+            }
+
+            public void CheckIn(int id, string stationName, int t)
+            {
+                dct.Add(id,(stationName, t));
+            }
+
+            public void CheckOut(int id, string stationName, int t)
+            {
+                var passenger = dct[id];
+
+                string route = getRoute(passenger.station, stationName);
+
+                if(!dctTimes.ContainsKey(route)) dctTimes.Add(route, new List<int>());
+
+                dctTimes[route].Add(t-passenger.time);
+
+                dct.Remove(id);
+            }
+
+            public double GetAverageTime(string startStation, string endStation)
+            {
+
+                string route = getRoute(startStation, endStation);
+
+                int total = 0;
+
+                foreach (var item in dctTimes[route])
+                {
+                    total += item;
+                }
+
+                return total / dctTimes[route].Count;
+            }
+
+            private string getRoute(string fromStation, string toStation)
+            {
+                return $"{fromStation}-{toStation}";
+            }
+        }
         #endregion
 
         #region  Problem 2670. Find the Distinct Difference Array
@@ -787,6 +1330,662 @@
 
             return ans;
         }
+        #endregion
+
+        #region Weekly 345
+        public int[] CircularGameLosers(int n, int k)
+        {
+            List<int> list = Enumerable.Range(2, n - 1).ToList();
+
+
+            int initSteps = k;
+            if (k >= n)
+            {
+                k %= n;
+            }
+
+            if (k == 0) return list.ToArray();
+
+
+            int round = 2;
+
+            while (list.Contains(k + 1))
+            {
+                list.Remove(k + 1);
+                k = k + round * initSteps;
+
+                if (k >= n)
+                {
+                    k %= n;
+                }
+                round++;
+            }
+
+            return list.ToArray();
+        }
+
+        public int[] CircularGameLosers_V1(int n, int k)
+        {
+            bool[] visited = new bool[n];
+
+            visited[0] = true;
+
+            int initSteps = k;
+            if (k >= n)
+            {
+                k %= n;
+            }
+
+            if (k == 0) return Enumerable.Range(2, n - 1).ToArray();
+
+
+            int round = 2;
+
+            while (!visited[k])
+            {
+                visited[k] = true;
+                k = round * initSteps;
+
+                if (k >= n)
+                {
+                    k %= n;
+                }
+                round++;
+            }
+            IList<int> lst = new List<int>();
+            for (int i = 0; i < n; i++)
+            {
+                if (!visited[i]) lst.Add(i + 1);
+            }
+
+            return lst.ToArray();
+        }
+
+        public bool DoesValidArrayExist(int[] derived)
+        {
+            return false;
+        }
+
+        bool[][] dp2684;
+        int m2684;
+        Queue<(int x, int y, int w)> q = new Queue<(int x, int y, int w)>();
+
+        public int MaxMoves(int[][] grid)
+        {
+            int res = 0;
+            m2684 = grid.Length;
+            int n = grid[0].Length;
+
+            dp2684 = new bool[m2684][];
+
+            for (int i = 0; i < m2684; i++)
+            {
+                dp2684[i] = new bool[n];
+                q.Enqueue((i, 0, 0));
+                dp2684[i][0] = true;
+            }
+
+            while (q.Count > 0)
+            {
+                var p = q.Dequeue();
+
+                res = Math.Max(res, p.w);
+
+                int nextCellCol = p.y + 1;
+
+                if (nextCellCol == n) continue;
+
+                int nextWeight = p.w + 1;
+
+                int nextCellRow = p.x;
+                checkAndAddv1(grid, grid[p.x][p.y], nextCellRow, nextCellCol, nextWeight);
+
+                nextCellRow = p.x + 1;
+                checkAndAddv1(grid, grid[p.x][p.y], nextCellRow, nextCellCol, nextWeight);
+
+                nextCellRow = p.x - 1;
+                checkAndAddv1(grid, grid[p.x][p.y], nextCellRow, nextCellCol, nextWeight);
+            }
+
+            return res;
+        }
+
+        private void checkAndAddv1(int[][] grid, int currentValue, int nextCellRow, int nextCellCol, int nextWeight)
+        {
+            if (nextCellRow < 0 || nextCellRow >= m2684 || currentValue >= grid[nextCellRow][nextCellCol] || dp2684[nextCellRow][nextCellCol]) return;
+
+            q.Enqueue((nextCellRow, nextCellCol, nextWeight));
+
+            dp2684[nextCellRow][nextCellCol] = true;
+
+        }
+
+        public int MaxMoves_V1(int[][] grid)
+        {
+            int m = grid.Length;
+            int n = grid[0].Length;
+            bool[][] dp = new bool[grid.Length][];
+
+            for (int i = 0; i < grid.Length; i++)
+            {
+                dp[i] = new bool[grid[i].Length];
+            }
+
+            Queue<(int x, int y, int w)> q = new Queue<(int x, int y, int w)>();
+
+            for (int i = 0; i < grid.Length; i++)
+            {
+                q.Enqueue((i, 0, 0));
+                dp[i][0] = true;
+
+            }
+            int res = 0;
+            while (q.Count > 0)
+            {
+                var p = q.Dequeue();
+
+                res = Math.Max(p.w, res);
+                int curVal = grid[p.x][p.y];
+                int nextCol = p.y + 1;
+
+                if (nextCol == n) continue;
+
+                if (!dp[p.x][nextCol] && curVal < grid[p.x][nextCol])
+                {
+                    q.Enqueue((p.x, nextCol, p.w + 1));
+                    dp[p.x][nextCol] = true;
+                }
+
+                if (p.x - 1 >= 0 && !dp[p.x - 1][nextCol] && curVal < grid[p.x - 1][nextCol])
+                {
+                    q.Enqueue((p.x - 1, nextCol, p.w + 1));
+                    dp[p.x - 1][nextCol] = true;
+                }
+
+                if (p.x + 1 < m && !dp[p.x + 1][nextCol] && curVal < grid[p.x + 1][nextCol])
+                {
+                    q.Enqueue((p.x + 1, nextCol, p.w + 1));
+                    dp[p.x + 1][nextCol] = true;
+                }
+
+            }
+
+            return res;
+        }
+
+        public int CountCompleteComponents(int n, int[][] edges)
+        {
+
+
+            return 0;
+        }
+
+        public int CountCompleteComponents_V1(int n, int[][] edges)
+        {
+            Dictionary<int, List<int>> map = new Dictionary<int, List<int>>();
+
+            for (int i = 0; i < n; i++)
+            {
+                map.Add(i, new List<int>());
+            }
+
+            foreach (var arr in edges)
+            {
+                map[arr[0]].Add(arr[1]);
+                map[arr[1]].Add(arr[0]);
+            }
+
+            List<List<int>> lst = new List<List<int>>();
+
+            bool[] visited = new bool[n];
+            int count = 0;
+            for (int i = 0; i < visited.Length; i++)
+            {
+                if (!visited[i])
+                {
+                    List<int> ll = new List<int>();
+                    visited[i] = true;
+                    ll.Add(i);
+                    Queue<int> q = new Queue<int>();
+
+                    foreach (var val in map[i])
+                    {
+                        if (!visited[val])
+                        {
+                            q.Enqueue(val);
+                            visited[val] = true;
+                            ll.Add(val);
+                        }
+                    }
+
+                    while (q.Count > 0)
+                    {
+                        var p = q.Dequeue();
+
+                        foreach (var item in map[p])
+                        {
+                            if (!visited[item])
+                            {
+                                visited[item] = true;
+                                q.Enqueue(item);
+                                ll.Add(item);
+                            }
+                        }
+                    }
+
+                    bool isComplete = true;
+
+                    foreach (var item in ll)
+                    {
+                        if (map[item].Count != ll.Count - 1)
+                        {
+                            isComplete = false;
+                            break;
+                        }
+                    }
+
+                    if (isComplete) count++;
+
+                }
+            }
+
+            return count;
+        }
+        #endregion
+
+        #region Weekly 346
+        public int MinLength(string s)
+        {
+
+            Stack<char> stack = new Stack<char>();
+
+            int i = 0;
+
+            while (i < s.Length)
+            {
+                if (stack.Count == 0)
+                {
+                    stack.Push(s[i++]);
+                    continue;
+                }
+
+                switch (s[i])
+                {
+                    case 'B':
+                        if (stack.Peek() == 'A')
+                        {
+                            stack.Pop();
+                            i++;
+                        }
+                        else
+                        {
+                            stack.Push(s[i++]);
+
+                        }
+                        break;
+                    case 'D':
+                        if (stack.Peek() == 'C')
+                        {
+                            stack.Pop();
+                            i++;
+                        }
+                        else
+                        {
+                            stack.Push(s[i++]);
+
+                        }
+                        break;
+                    default:
+                        stack.Push(s[i++]);
+                        break;
+                }
+            }
+
+            return stack.Count;
+            //List<char> lst = s.ToCharArray().ToList();
+
+            //for (int i = 0; i < lst.Count-1; i++)
+            //{
+            //    if (lst[i] == 'A')
+            //    {
+            //        if (lst[i+1] == 'B')
+            //        {
+            //            lst.RemoveAt(i + 1);
+            //            lst.RemoveAt(i);
+            //        }
+            //        i--;
+            //    }
+            //    else if (lst[i] == 'C')
+            //    {
+
+            //        if (lst[i + 1] == 'D')
+            //        {
+            //            lst.RemoveAt(i + 1);
+            //            lst.RemoveAt(i);
+            //        }
+            //        i--;
+            //    }
+            //}
+
+            //return lst.Count;
+        }
+
+        public string MakeSmallestPalindrome(string s)
+        {
+            int start = 0;
+            int end = s.Length - 1;
+            char[] chars = s.ToCharArray();
+            while (start <= end)
+            {
+                if (chars[start] == chars[end]) continue;
+
+                if (chars[start] > chars[end])
+                {
+                    chars[start] = chars[end];
+
+                }
+                else
+                {
+                    chars[end] = chars[start];
+                }
+                start++;
+                end--;
+            }
+
+            return new string(chars);
+        }
+
+        public int PunishmentNumber(int n)
+        {
+            int sum = 0;
+
+            for (int i = 1; i <= n; i++)
+            {
+                int square = i * i;
+                string squareString = square.ToString();
+
+                int substringSum = 0;
+                bool isValid = true;
+
+                for (int j = 0; j < squareString.Length; j++)
+                {
+                    substringSum += squareString[j] - '0';
+
+                    if (substringSum > i)
+                    {
+                        isValid = false;
+                        break;
+                    }
+                }
+
+                if (isValid && substringSum == i)
+                {
+                    sum += square;
+                }
+            }
+
+            return sum;
+        }
+
+
+        public int[][] ModifiedGraphEdges(int n, int[][] edges, int source, int destination, int target)
+        {
+            // Create a adjacency list representation of the graph
+            Dictionary<int, List<int[]>> graph = new Dictionary<int, List<int[]>>();
+            foreach (var edge in edges)
+            {
+                int u = edge[0];
+                int v = edge[1];
+                int weight = edge[2];
+
+                if (!graph.ContainsKey(u))
+                {
+                    graph[u] = new List<int[]>();
+                }
+                graph[u].Add(new int[] { v, weight });
+
+                if (!graph.ContainsKey(v))
+                {
+                    graph[v] = new List<int[]>();
+                }
+                graph[v].Add(new int[] { u, weight });
+            }
+
+            // Perform Dijkstra's algorithm to find the shortest distance from source to all other nodes
+            int[] distances = new int[n];
+            Array.Fill(distances, Int32.MaxValue);
+            distances[source] = 0;
+
+            PriorityQueue1<(int, int)> pq = new PriorityQueue1<(int, int)>((a, b) => a.Item2.CompareTo(b.Item2));
+            pq.Enqueue((source, 0));
+
+            while (pq.Count > 0)
+            {
+                (int x, int y) node = pq.Dequeue();
+                int u = node.x;
+                int dist = node.y;
+
+                if (dist > distances[u])
+                {
+                    continue;
+                }
+
+                if (graph.ContainsKey(u))
+                {
+                    foreach (int[] edge in graph[u])
+                    {
+                        int v = edge[0];
+                        int weight = edge[1];
+
+                        if (weight == -1)
+                        {
+                            weight = 1;
+                        }
+
+                        int newDist = dist + weight;
+                        if (newDist < distances[v])
+                        {
+                            distances[v] = newDist;
+                            pq.Enqueue((v, newDist));
+                        }
+                    }
+                }
+            }
+
+            // Check if it is possible to make the shortest distance from source to destination equal to target
+            if (distances[destination] == target)
+            {
+                return edges;
+            }
+
+            return new int[][] { };
+        }
+
+        // Implementation of PriorityQueue using Binary Heap
+        public class PriorityQueue1<T> where T : IComparable<T>
+        {
+            private List<T> heap;
+            private Comparison<T> compare;
+
+            public PriorityQueue1()
+            {
+                heap = new List<T>();
+                compare = Comparer<T>.Default.Compare;
+            }
+
+            public PriorityQueue1(Comparison<T> comparison)
+            {
+                heap = new List<T>();
+                compare = comparison;
+            }
+
+            public int Count
+            {
+                get { return heap.Count; }
+            }
+
+            public void Enqueue(T item)
+            {
+                heap.Add(item);
+                int i = heap.Count - 1;
+
+                while (i > 0)
+                {
+                    int parent = (i - 1) / 2;
+
+                    if (compare(heap[parent], item) <= 0)
+                    {
+                        break;
+                    }
+
+                    heap[i] = heap[parent];
+                    i = parent;
+                }
+
+                heap[i] = item;
+            }
+
+            public T Dequeue()
+            {
+                T item = heap[0];
+                int lastIndex = heap.Count - 1;
+                T lastItem = heap[lastIndex];
+                heap.RemoveAt(lastIndex);
+
+                if (lastIndex > 0)
+                {
+                    int i = 0;
+                    while (i < lastIndex)
+                    {
+                        int child = 2 * i + 1;
+
+                        if (child < lastIndex && compare(heap[child], heap[child + 1]) > 0)
+                        {
+                            child++;
+                        }
+
+                        if (compare(lastItem, heap[child]) <= 0)
+                        {
+                            break;
+                        }
+
+                        heap[i] = heap[child];
+                        i = child;
+                    }
+
+                    heap[i] = lastItem;
+                }
+
+                return item;
+            }
+        }
+
+        #endregion
+
+        #region Weekly 347
+        public string RemoveTrailingZeros(string num)
+        {
+            int i = num.Length - 1;
+
+            while (i >= 0)
+            {
+                if (num[i] != '0') break;
+                i--;
+            }
+
+            return num.Substring(0, i + 1);
+        }
+
+        public int[][] DiagonalDifference(int[][] grid)
+        {
+            int m = grid.Length;
+            int n = grid[0].Length;
+
+            int[][] topLeft = new int[m][];
+            int[][] bottomRight = new int[m][];
+            int[][] answer = new int[m][];
+
+            for (int i = 0; i < m; i++)
+            {
+                topLeft[i] = new int[n];
+                bottomRight[i] = new int[n];
+                answer[i] = new int[n];
+            }
+
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    // Calculate top-left diagonal values
+                    int r = i - 1;
+                    int c = j - 1;
+                    HashSet<int> distinctTopLeft = new HashSet<int>();
+                    while (r >= 0 && c >= 0)
+                    {
+                        distinctTopLeft.Add(grid[r][c]);
+                        r--;
+                        c--;
+                    }
+                    topLeft[i][j] = distinctTopLeft.Count;
+
+                    // Calculate bottom-right diagonal values
+                    r = i + 1;
+                    c = j + 1;
+                    HashSet<int> distinctBottomRight = new HashSet<int>();
+                    while (r < m && c < n)
+                    {
+                        distinctBottomRight.Add(grid[r][c]);
+                        r++;
+                        c++;
+                    }
+                    bottomRight[i][j] = distinctBottomRight.Count;
+
+                    // Calculate answer
+                    answer[i][j] = Math.Abs(topLeft[i][j] - bottomRight[i][j]);
+                }
+            }
+
+            return answer;
+        }
+
+        public long MinimumCost(string s)
+        {
+            int n = s.Length;
+            long cost = 0;
+            int countOnes = 0;
+            int countZeros = 0;
+
+            // Count the number of ones and zeros in the string
+            foreach (char c in s)
+            {
+                if (c == '1')
+                    countOnes++;
+                else
+                    countZeros++;
+            }
+
+            int minCost = Math.Min(countOnes, countZeros);
+
+            // Calculate the cost of making all characters equal to '0'
+            for (int i = 0; i < n; i++)
+            {
+                if (s[i] != '0')
+                    cost += i + 1;
+            }
+
+            // Calculate the cost of making all characters equal to '1'
+            long currCost = cost;
+            for (int i = n - 1; i >= 0; i--)
+            {
+                if (s[i] != '1')
+                    currCost += n - i;
+
+                cost = Math.Min(cost, currCost);
+            }
+
+            return Math.Min(cost, minCost);
+        }
+
         #endregion
     }
 }
