@@ -268,7 +268,7 @@ namespace Jun
                 {
                     if (keys[low] == snap_id) return versions[index][keys[low]];
 
-                    if (keys[low] > snap_id) return versions[index][keys[low-1]];
+                    if (keys[low] > snap_id) return versions[index][keys[low - 1]];
 
                     if (keys[high] <= snap_id) return versions[index][keys[high]];
 
@@ -323,7 +323,40 @@ namespace Jun
         }
         #endregion
 
-        #region Day 15 Problem
+        #region Day 15 Problem 1161. Maximum Level Sum of a Binary Tree
+        public int MaxLevelSum(TreeNode root)
+        {
+            int resultLevel = 1;
+
+            Dictionary<int,int> maps = new Dictionary<int, int>();
+            Queue<(TreeNode node, int level)> queue = new Queue<(TreeNode node, int level)>();
+
+            queue.Enqueue((root, resultLevel));
+            while (queue.Count > 0)
+            {
+                var p = queue.Dequeue();
+
+                if(!maps.ContainsKey(p.level))
+                {
+                    maps.Add(p.level, 0);
+                }
+
+                maps[p.level] += p.node.val;
+
+                if(p.node.left!= null)
+                {
+                    queue.Enqueue((p.node.left, p.level+1));
+                }
+
+                if (p.node.right != null)
+                {
+                    queue.Enqueue((p.node.right, p.level + 1));
+                }
+            }
+
+            
+            return maps.OrderByDescending(x=>x.Value).First().Key;
+        }
         #endregion
 
         #region Day 16 Problem
