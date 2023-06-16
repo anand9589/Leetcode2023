@@ -328,7 +328,7 @@ namespace Jun
         {
             int resultLevel = 1;
 
-            Dictionary<int,int> maps = new Dictionary<int, int>();
+            Dictionary<int, int> maps = new Dictionary<int, int>();
             Queue<(TreeNode node, int level)> queue = new Queue<(TreeNode node, int level)>();
 
             queue.Enqueue((root, resultLevel));
@@ -336,16 +336,16 @@ namespace Jun
             {
                 var p = queue.Dequeue();
 
-                if(!maps.ContainsKey(p.level))
+                if (!maps.ContainsKey(p.level))
                 {
                     maps.Add(p.level, 0);
                 }
 
                 maps[p.level] += p.node.val;
 
-                if(p.node.left!= null)
+                if (p.node.left != null)
                 {
-                    queue.Enqueue((p.node.left, p.level+1));
+                    queue.Enqueue((p.node.left, p.level + 1));
                 }
 
                 if (p.node.right != null)
@@ -354,252 +354,312 @@ namespace Jun
                 }
             }
 
-            
-            return maps.OrderByDescending(x=>x.Value).First().Key;
+
+            return maps.OrderByDescending(x => x.Value).First().Key;
         }
         #endregion
 
-        #region Day 16 Problem
-        #endregion
+        #region Day 16 Problem 1569. Number of Ways to Reorder Array to Get Same BST
+       
+        private const long Mod = (long)1e9 + 7;
+        private long[,] table_1569;
 
-        #region Day 17 Problem
-        #endregion
-
-        #region Day 18 Problem
-        #endregion
-
-        #region Day 19 Problem
-        #endregion
-
-        #region Day 20 Problem
-        #endregion
-
-        #region Day 21 Problem
-        #endregion
-
-        #region Day 22 Problem
-        #endregion
-
-        #region Day 23 Problem
-        #endregion
-
-        #region Day 24 Problem
-        #endregion
-
-        #region Day 25 Problem
-        #endregion
-
-        #region Day 26 Problem
-        #endregion
-
-        #region Day 27 Problem
-        #endregion
-
-        #region Day 28 Problem
-        #endregion
-
-        #region Day 29 Problem
-        #endregion
-
-        #region Day 30 Problem
-        #endregion
-
-        #region Weekly 348
-
-        //Minimize String Length
-
-        public int MinimizedStringLength(string s)
+        public int NumOfWays(int[] nums)
         {
-            if (s.Length <= 1) return s.Length;
-            int i = 0;
-            HashSet<char> vis = new HashSet<char>();
-            while (i < s.Length)
+            int m = nums.Length;
+
+            // Table of Pascal's triangle
+            BuildPascalsTriangle(m);
+
+            List<int> arrList = nums.ToList();
+            return (int)((DFS(arrList) - 1) % Mod);
+        }
+
+        private void BuildPascalsTriangle(int m)
+        {
+            table_1569 = new long[m, m];
+            for (int i = 0; i < m; i++)
             {
-                vis.Add(s[i]);
+                table_1569[i, 0] = table_1569[i, i] = 1;
+                for (int j = 1; j < i; j++)
+                {
+                    table_1569[i, j] = (table_1569[i - 1, j - 1] + table_1569[i - 1, j]) % Mod;
+                }
+            }
+        }
+
+        private long DFS(List<int> nums)
+        {
+            int m = nums.Count;
+            if (m < 3)
+            {
+                return 1;
+            }
+
+            List<int> leftNodes = new List<int>();
+            List<int> rightNodes = new List<int>();
+            int root = nums[0];
+
+            for (int i = 1; i < m; i++)
+            {
+                if (nums[i] < root)
+                {
+                    leftNodes.Add(nums[i]);
+                }
+                else
+                {
+                    rightNodes.Add(nums[i]);
+                }
+            }
+
+            long leftWays = DFS(leftNodes) % Mod;
+            long rightWays = DFS(rightNodes) % Mod;
+            int leftSize = leftNodes.Count;
+
+            return (((leftWays * rightWays) % Mod) * table_1569[m - 1, leftSize]) % Mod;
+        }
+    
+
+    #endregion
+
+    #region Day 17 Problem
+    #endregion
+
+    #region Day 18 Problem
+    #endregion
+
+    #region Day 19 Problem
+    #endregion
+
+    #region Day 20 Problem
+    #endregion
+
+    #region Day 21 Problem
+    #endregion
+
+    #region Day 22 Problem
+    #endregion
+
+    #region Day 23 Problem
+    #endregion
+
+    #region Day 24 Problem
+    #endregion
+
+    #region Day 25 Problem
+    #endregion
+
+    #region Day 26 Problem
+    #endregion
+
+    #region Day 27 Problem
+    #endregion
+
+    #region Day 28 Problem
+    #endregion
+
+    #region Day 29 Problem
+    #endregion
+
+    #region Day 30 Problem
+    #endregion
+
+    #region Weekly 348
+
+    //Minimize String Length
+
+    public int MinimizedStringLength(string s)
+    {
+        if (s.Length <= 1) return s.Length;
+        int i = 0;
+        HashSet<char> vis = new HashSet<char>();
+        while (i < s.Length)
+        {
+            vis.Add(s[i]);
+            i++;
+        }
+        return vis.Count;
+    }
+
+    public int SemiOrderedPermutation(int[] nums)
+    {
+        int n = nums.Length;
+        if (nums[0] == 1 && nums[n - 1] == n) return 0;
+
+        int res = 0;
+        int i = -1;
+        int j = -1;
+        if (nums[0] != 1)
+        {
+            i = Array.IndexOf(nums, 1);
+            while (i != 0)
+            {
+                res++;
+                j = i - 1;
+                swap(nums, i, j);
+
+                i--;
+            }
+
+        }
+        if (nums[n - 1] != n)
+        {
+            i = Array.IndexOf(nums, n);
+            while (i != n - 1)
+            {
+                res++;
+                j = i + 1;
+                swap(nums, i, j);
                 i++;
             }
-            return vis.Count;
-        }
-
-        public int SemiOrderedPermutation(int[] nums)
-        {
-            int n = nums.Length;
-            if (nums[0] == 1 && nums[n - 1] == n) return 0;
-
-            int res = 0;
-            int i = -1;
-            int j = -1;
-            if (nums[0] != 1)
-            {
-                i = Array.IndexOf(nums, 1);
-                while (i != 0)
-                {
-                    res++;
-                    j = i - 1;
-                    swap(nums, i, j);
-
-                    i--;
-                }
-
-            }
-            if (nums[n - 1] != n)
-            {
-                i = Array.IndexOf(nums, n);
-                while (i != n - 1)
-                {
-                    res++;
-                    j = i + 1;
-                    swap(nums, i, j);
-                    i++;
-                }
-
-            }
-
-            return res;
-        }
-
-        private static void swap(int[] nums, int i, int j)
-        {
-            int temp = nums[j];
-            nums[j] = nums[i];
-            nums[i] = temp;
-        }
-        public long MatrixSumQueries(int n, int[][] queries)
-        {
-            long[] arr = new long[n * n];
-
-            long res = 0;
-
-            foreach (var item in queries)
-            {
-                int k = item[1];
-                int v = item[2];
-
-                if (item[0] == 0)
-                {
-                    for (int i = 0; i < n; i++)
-                    {
-                        if (arr[k * n + i] != v)
-                        {
-                            res -= arr[k * n + i];
-                            arr[k * n + i] = v;
-                            res += v;
-                        }
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < n; i++)
-                    {
-                        if (arr[i * n + k] != v)
-                        {
-                            res -= arr[i * n + k];
-                            arr[i * n + k] = v;
-                            res += v;
-                        }
-                    }
-                }
-            }
-
-            return res;
-        }
-
-        public long MatrixSumQueries_v1(int n, int[][] queries)
-        {
-            long res = 0;
-
-            long[][] arr = new long[n][];
-
-            for (int i = 0; i < n; i++)
-            {
-                arr[i] = new long[n];
-            }
-
-            foreach (var item in queries)
-            {
-                int k = item[1];
-                int v = item[2];
-                if (item[0] == 0)
-                {
-                    for (int i = 0; i < n; i++)
-                    {
-                        arr[k][i] = v;
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < n; i++)
-                    {
-                        arr[i][k] = v;
-                    }
-                }
-            }
-
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    res += arr[i][j];
-                }
-            }
-
-            return res;
 
         }
 
-        #endregion
-
-        #region Problem
-        #endregion
-
-        #region Problem
-        #endregion
-
-        #region BiWeekly 106
-        public bool IsFascinating(int n)
-        {
-            bool[] arr = new bool[9];
-            int k = n;
-            if (!isFascHelper(arr, k)) return false;
-
-            k = n * 2;
-
-            if (!isFascHelper(arr, k)) return false;
-
-
-            k = n * 3;
-            if (!isFascHelper(arr, k)) return false;
-            return true;
-        }
-
-        private bool isFascHelper(bool[] arr, int n)
-        {
-            int k = n;
-
-            int r = k % 10;
-
-            if (r == 0) return false;
-
-            arr[r - 1] = true;
-
-            k /= 10;
-
-            r = k % 10;
-
-
-            if (r == 0 || arr[r - 1]) return false;
-            arr[r - 1] = true;
-
-            k /= 10;
-
-            r = k % 10;
-
-
-            if (r == 0 || arr[r - 1]) return false;
-            arr[r - 1] = true;
-
-            return true;
-        }
-        #endregion
+        return res;
     }
+
+    private static void swap(int[] nums, int i, int j)
+    {
+        int temp = nums[j];
+        nums[j] = nums[i];
+        nums[i] = temp;
+    }
+    public long MatrixSumQueries(int n, int[][] queries)
+    {
+        long[] arr = new long[n * n];
+
+        long res = 0;
+
+        foreach (var item in queries)
+        {
+            int k = item[1];
+            int v = item[2];
+
+            if (item[0] == 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    if (arr[k * n + i] != v)
+                    {
+                        res -= arr[k * n + i];
+                        arr[k * n + i] = v;
+                        res += v;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    if (arr[i * n + k] != v)
+                    {
+                        res -= arr[i * n + k];
+                        arr[i * n + k] = v;
+                        res += v;
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+    public long MatrixSumQueries_v1(int n, int[][] queries)
+    {
+        long res = 0;
+
+        long[][] arr = new long[n][];
+
+        for (int i = 0; i < n; i++)
+        {
+            arr[i] = new long[n];
+        }
+
+        foreach (var item in queries)
+        {
+            int k = item[1];
+            int v = item[2];
+            if (item[0] == 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    arr[k][i] = v;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    arr[i][k] = v;
+                }
+            }
+        }
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                res += arr[i][j];
+            }
+        }
+
+        return res;
+
+    }
+
+    #endregion
+
+    #region Problem
+    #endregion
+
+    #region Problem
+    #endregion
+
+    #region BiWeekly 106
+    public bool IsFascinating(int n)
+    {
+        bool[] arr = new bool[9];
+        int k = n;
+        if (!isFascHelper(arr, k)) return false;
+
+        k = n * 2;
+
+        if (!isFascHelper(arr, k)) return false;
+
+
+        k = n * 3;
+        if (!isFascHelper(arr, k)) return false;
+        return true;
+    }
+
+    private bool isFascHelper(bool[] arr, int n)
+    {
+        int k = n;
+
+        int r = k % 10;
+
+        if (r == 0) return false;
+
+        arr[r - 1] = true;
+
+        k /= 10;
+
+        r = k % 10;
+
+
+        if (r == 0 || arr[r - 1]) return false;
+        arr[r - 1] = true;
+
+        k /= 10;
+
+        r = k % 10;
+
+
+        if (r == 0 || arr[r - 1]) return false;
+        arr[r - 1] = true;
+
+        return true;
+    }
+    #endregion
+}
 }
