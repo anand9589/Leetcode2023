@@ -477,7 +477,7 @@ namespace Jun
             int K = 0;
             foreach (int x in gain)
             {
-                K = result - x;
+                K += x;
 
                 result = Math.Max(result, K);
             }
