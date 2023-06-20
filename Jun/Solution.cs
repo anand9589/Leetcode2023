@@ -486,7 +486,47 @@ namespace Jun
         }
         #endregion
 
-        #region Day 20 Problem
+        #region Day 20 Problem 2090. K Radius Subarray Averages
+        public int[] GetAverages(int[] nums, int k)
+        {
+            if (k == 0) return nums;
+
+            int[] result = Enumerable.Repeat(-1, nums.Length).ToArray();
+
+            int high = k * 2;
+            if (high + 1 > nums.Length) return result;
+
+            int low = 0;
+            long sum = 0;
+            while (low <= high)
+            {
+                sum += nums[low];
+                low++;
+            }
+
+            low = 0;
+            int divider = high - low + 1;
+
+            int r = (int)(sum / divider);
+
+            result[low + k] = r;
+            low++;
+            high++;
+            while (high < nums.Length)
+            {
+                sum -= nums[low - 1];
+                sum += nums[high];
+
+                r = (int)(sum / divider);
+
+                result[low + k] = r;
+                low++;
+                high++;
+            }
+            return result;
+
+
+        }
         #endregion
 
         #region Day 21 Problem
