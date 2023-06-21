@@ -529,7 +529,102 @@ namespace Jun
         }
         #endregion
 
-        #region Day 21 Problem
+        #region Day 21 Problem 2448. Minimum Cost to Make Array Equal
+
+        public long MinCost(int[] nums, int[] cost)
+        {
+            long result = 0;
+
+            int n = nums.Length;
+
+            List<(int v, int w)> lst = new List<(int v, int w)>();
+
+
+            for (int i = 0; i < n; i++)
+            {
+                lst.Add((nums[i], cost[i]));
+            }
+
+            lst = lst.OrderBy(x => x.v).ToList();
+
+            long[] prefixCost = new long[n];
+
+            prefixCost[0] = lst[0].w;
+
+            for (int i = 1; i < n; i++)
+            {
+                prefixCost[i] = lst[i].w + prefixCost[i - 1];
+            }
+
+            long totalCost = 0;
+
+            for (int i = 1; i < n; i++)
+            {
+                totalCost += (long)lst[i].w * (long)(lst[i].v - lst[0].v);
+            }
+
+            result = totalCost;
+
+            for (int i = 1; i < n; i++)
+            {
+                int gap = lst[i].v - lst[i - 1].v;
+
+                totalCost += (long)prefixCost[i - 1] * (long)gap;
+
+                totalCost -= (long)(prefixCost[n-1] - prefixCost[i-1]) * (long) gap;
+
+                result = Math.Min(result, totalCost);
+            }
+
+            return result;
+        }
+
+        public long MinCost_v1(int[] nums, int[] cost)
+        {
+            int l = 1000001;
+            int r = 0;
+
+            foreach (int num in nums)
+            {
+                l = Math.Min(l, num);
+                r = Math.Max(r, num);
+            }
+
+            long result = getCost(nums, cost, nums[0]);
+
+            while (l < r)
+            {
+                int mid = (l + r) / 2;
+
+                long cost1 = getCost(nums, cost, nums[mid]);
+                long cost2 = getCost(nums, cost, nums[mid + 1]);
+
+                result = Math.Min(cost1, cost2);
+
+                if (cost1 > cost2)
+                {
+                    l = mid + 1;
+                }
+                else
+                {
+                    r = mid;
+                }
+            }
+
+            return result;
+        }
+
+        private long getCost(int[] nums, int[] cost, int v)
+        {
+            long result = 0L;
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                result += 1L * Math.Abs(nums[i] - v) * cost[i];
+            }
+
+            return result;
+        }
         #endregion
 
         #region Day 22 Problem
