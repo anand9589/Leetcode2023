@@ -571,7 +571,7 @@ namespace Jun
 
                 totalCost += (long)prefixCost[i - 1] * (long)gap;
 
-                totalCost -= (long)(prefixCost[n-1] - prefixCost[i-1]) * (long) gap;
+                totalCost -= (long)(prefixCost[n - 1] - prefixCost[i - 1]) * (long)gap;
 
                 result = Math.Min(result, totalCost);
             }
@@ -627,13 +627,93 @@ namespace Jun
         }
         #endregion
 
-        #region Day 22 Problem
+        #region Day 22 Problem 714. Best Time to Buy and Sell Stock with Transaction Fee
+        public int MaxProfit(int[] prices, int fee)
+        {
+            int cash = 0;
+            int hold = -prices[0];
+
+            for (int i = 1; i < prices.Length; i++)
+            {
+                int prevCash = cash;
+                cash = Math.Max(cash, hold + prices[i] - fee);
+                hold = Math.Max(hold, prevCash - prices[i]);
+            }
+
+            return cash;
+        }
         #endregion
 
-        #region Day 23 Problem
+        #region Day 23 Problem 1027. Longest Arithmetic Subsequence
+        public int LongestArithSeqLength(int[] nums)
+        {
+            int n = nums.Length;
+            Dictionary<int, Dictionary<int, int>> dp = new Dictionary<int, Dictionary<int, int>>();
+            int maxLen = 2;
+
+            for (int i = 0; i < n; i++)
+            {
+                dp[i] = new Dictionary<int, int>();
+
+                for (int j = 0; j < i; j++)
+                {
+                    int diff = nums[i] - nums[j];
+
+                    if (dp[j].ContainsKey(diff))
+                    {
+                        dp[i][diff] = dp[j][diff] + 1;
+                    }
+                    else
+                    {
+                        dp[i][diff] = 2;
+                    }
+
+                    maxLen = Math.Max(maxLen, dp[i][diff]);
+                }
+            }
+
+            return maxLen;
+
+        }
+
         #endregion
 
-        #region Day 24 Problem
+        #region Day 24 Problem 956. Tallest Billboard
+        public int TallestBillboard(int[] rods)
+        {
+            // dp[taller - shorter] = taller
+            Dictionary<int, int> dp = new Dictionary<int, int>();
+            dp.Add(0, 0);
+
+            foreach (int r in rods)
+            {
+                // newDp means we don't add r to these stands.
+                Dictionary<int, int> newDp = new Dictionary<int, int>(dp);
+
+                foreach (KeyValuePair<int, int> entry in dp)
+                {
+                    int diff = entry.Key;
+                    int taller = entry.Value;
+                    int shorter = taller - diff;
+
+                    // Add r to the taller stand, thus the height difference is increased to diff + r.
+                    int newTaller = newDp.GetValueOrDefault(diff + r, 0);
+                    newDp[diff + r] = Math.Max(newTaller, taller + r);
+
+                    // Add r to the shorter stand, the height difference is expressed as abs(shorter + r - taller).
+                    int newDiff = Math.Abs(shorter + r - taller);
+                    int newTaller2 = Math.Max(shorter + r, taller);
+                    newDp[newDiff] = Math.Max(newTaller2, newDp.GetValueOrDefault(newDiff, 0));
+                }
+
+                dp = newDp;
+            }
+
+            // Return the maximum height with 0 difference.
+            return dp.GetValueOrDefault(0, 0);
+        }
+
+
         #endregion
 
         #region Day 25 Problem
