@@ -719,7 +719,51 @@ namespace Jun
         #region Day 25 Problem
         #endregion
 
-        #region Day 26 Problem
+        #region Day 26 Problem 2462. Total Cost to Hire K Workers
+        public long TotalCost(int[] costs, int k, int candidates)
+        {
+            PriorityQueue<int, int> headWorkers = new PriorityQueue<int, int>();
+            PriorityQueue<int, int> tailWorkers = new PriorityQueue<int, int>();
+
+            for (int i = 0; i < candidates; i++)
+            {
+                headWorkers.Enqueue(costs[i], costs[i]);
+            }
+
+            for (int i = Math.Max(candidates, costs.Length - candidates); i < costs.Length; i++)
+            {
+                tailWorkers.Enqueue(costs[i], costs[i]);
+            }
+
+            int nextHead = candidates;
+            int nextTail = costs.Length - 1 - candidates;
+
+            long result = 0;
+
+            for (int i = 0; i < k; i++)
+            {
+                if(tailWorkers.Count==0 || headWorkers.Count>0 && headWorkers.Peek() <= tailWorkers.Peek())
+                {
+                    result += headWorkers.Dequeue();
+
+                    if (nextHead <= nextTail)
+                    {
+                        headWorkers.Enqueue(costs[nextHead], costs[nextHead++]);
+                    }
+                }
+                else
+                {
+                    result += tailWorkers.Dequeue();
+
+                    if (nextHead <= nextTail)
+                    {
+                        tailWorkers.Enqueue(costs[nextTail], costs[nextTail--]);
+                    }
+                }
+            }
+
+            return result;
+        }
         #endregion
 
         #region Day 27 Problem
