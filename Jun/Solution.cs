@@ -428,7 +428,6 @@ namespace Jun
 
         int Mod = 1_000_000_007;
         int[][] dp;
-        int[][] directions = new int[][] { new int[] { 0, 1 }, new int[] { 0, -1 }, new int[] { 1, 0 }, new int[] { -1, 0 } };
         public int CountPaths(int[][] grid)
         {
             int result = 0;
@@ -742,7 +741,7 @@ namespace Jun
 
             for (int i = 0; i < k; i++)
             {
-                if(tailWorkers.Count==0 || headWorkers.Count>0 && headWorkers.Peek() <= tailWorkers.Peek())
+                if (tailWorkers.Count == 0 || headWorkers.Count > 0 && headWorkers.Peek() <= tailWorkers.Peek())
                 {
                     result += headWorkers.Dequeue();
 
@@ -766,16 +765,436 @@ namespace Jun
         }
         #endregion
 
-        #region Day 27 Problem
+        #region Day 27 Problem 373. Find K Pairs with Smallest Sums
+
+        public IList<IList<int>> KSmallestPairs_v1(int[] nums1, int[] nums2, int k)
+        {
+            IList<IList<int>> result = new List<IList<int>>();
+
+            PriorityQueue<(int n1, int n2), int> q = new PriorityQueue<(int n1, int n2), int>(Comparer<int>.Create((x, y) => y - x));
+
+
+            q.Enqueue((nums1[0], nums2[0]), nums1[0] + nums2[0]);
+            for (int i = 0; i < nums1.Length; i++)
+            {
+                for (int j = 0; j < nums1.Length; j++)
+                {
+                    if (i == 0 && j == 0) continue;
+                    int csum = nums1[i] + nums2[j];
+
+                    if (q.Count < k)
+                    {
+                        q.Enqueue((nums1[i], nums2[j]), csum);
+                    }
+                    else
+                    {
+                        q.EnqueueDequeue((nums1[i], nums2[j]), csum);
+                    }
+                }
+            }
+
+            while (q.Count > 0)
+            {
+                var c = q.Dequeue();
+
+                result.Add(new List<int>() { c.n1, c.n2 });
+            }
+
+            return result;
+        }
+        public IList<IList<int>> KSmallestPairs(int[] nums1, int[] nums2, int k)
+        {
+            int m = nums1.Length;
+            int n = nums2.Length;
+
+            IList<IList<int>> result = new List<IList<int>>();
+            bool[,] visited = new bool[m, n];
+            //HashSet<KeyValuePair<int, int>> visited = new HashSet<KeyValuePair<int, int>>();
+
+            //PriorityQueue<(int i, int j), int> pq = new PriorityQueue<(int i, int j), int>(Comparer<int>.Create((x, y) => y - x));
+            PriorityQueue<(int i, int j), int> pq = new PriorityQueue<(int i, int j), int>();
+            pq.Enqueue((0, 0), nums1[0] + nums2[0]);
+            visited[0, 0] = true;
+
+            while (k-- > 0 && pq.Count > 0)
+            {
+                (int i, int j) = pq.Dequeue();
+
+                result.Add(new List<int> { nums1[i], nums2[j] });
+
+                if (i + 1 < m && !visited[i + 1, j])
+                {
+                    pq.Enqueue((i + 1, j), nums1[i + 1] + nums2[j]);
+                    visited[i + 1, j] = true;
+                }
+
+                if (j + 1 < n && !visited[i, j + 1])
+                {
+                    pq.Enqueue((i, j + 1), nums1[i] + nums2[j + 1]);
+                    visited[i, j + 1] = true;
+                }
+            }
+
+            return result;
+
+
+        }
+        public IList<IList<int>> KSmallestPairs_v4(int[] nums1, int[] nums2, int k)
+        {
+            int m = nums1.Length;
+            int n = nums2.Length;
+
+            IList<IList<int>> result = new List<IList<int>>();
+            result.Add(new List<int> { nums1[0], nums2[0] });
+            k--;
+            if (m == 1 && n == 1 || k == 0) return result;
+
+            if (m == 1)
+            {
+                int i = 1;
+                while (k-- > 0 && i < n)
+                {
+                    result.Add(new List<int> { nums1[0], nums2[i++] });
+                }
+                return result;
+            }
+
+            if (n == 1)
+            {
+                int i = 1;
+                while (k-- > 0 && i < m)
+                {
+                    result.Add(new List<int> { nums1[i++], nums2[0] });
+                }
+                return result;
+            }
+
+            (int i, int j, int sum) top1 = (0, 1, nums1[0] + nums1[1]);
+            (int i, int j, int sum) top2 = (1, 0, nums1[1] + nums1[0]);
+
+            bool[,] visited = new bool[m, n];
+            visited[0, 0] = true;
+
+            while (k-- > 0)
+            {
+                if (top1.sum <= top2.sum)
+                {
+                    visited[top1.i, top1.j] = true;
+                    result.Add(new List<int> { nums1[top2.i], nums2[top2.j] });
+
+                    top1.j++;
+                }
+                else
+                {
+                    visited[top2.i, top2.j] = true;
+                    result.Add(new List<int> { nums1[top2.i], nums2[top2.j] });
+
+                    top2.i++;
+                }
+            }
+
+            return result;
+        }
+        public IList<IList<int>> KSmallestPairs_v3(int[] nums1, int[] nums2, int k)
+        {
+            int m = nums1.Length;
+            int n = nums2.Length;
+
+
+            IList<IList<int>> result = new List<IList<int>>();
+            HashSet<KeyValuePair<int, int>> visited = new HashSet<KeyValuePair<int, int>>();
+
+            PriorityQueue<(int n1, int n2), int> pq = new PriorityQueue<(int n1, int n2), int>(Comparer<int>.Create((x, y) => y - x));
+            pq.Enqueue((0, 0), nums1[0] + nums2[0]);
+            visited.Add(new KeyValuePair<int, int>(0, 0));
+
+            while (k-- > 0 && pq.Count != 0)
+            {
+                (int i, int j) = pq.Dequeue();
+
+                result.Add(new List<int> { nums1[i], nums2[j] });
+
+                if (i + 1 < m && !visited.Contains(new KeyValuePair<int, int>(i + 1, j)))
+                {
+                    pq.Enqueue((i + 1, j), nums1[i + 1] + nums2[j]);
+                    visited.Add(new KeyValuePair<int, int>(i + 1, j));
+                }
+
+                if (j + 1 < n && !visited.Contains(new KeyValuePair<int, int>(i, j + 1)))
+                {
+                    pq.Enqueue((i, j + 1), nums1[i] + nums2[j + 1]);
+                    visited.Add(new KeyValuePair<int, int>(i, j + 1));
+                }
+            }
+
+            return result;
+        }
+
+        public IList<IList<int>> KSmallestPairs_v2(int[] nums1, int[] nums2, int k)
+        {
+            int n1Len = nums1.Length;
+            int n2Len = nums2.Length;
+
+            if (n1Len == 1 && n2Len == 1) return new List<IList<int>>() { new List<int> { nums1[0], nums2[0] } };
+
+            IList<IList<int>> result = new List<IList<int>>();
+            if (n1Len == 1)
+            {
+                for (int i = 0; i < k; i++)
+                {
+                    result.Add(new List<int> { nums1[0], nums2[i] });
+                }
+
+                return result;
+            }
+
+            if (n2Len == 1)
+            {
+
+                for (int i = 0; i < k; i++)
+                {
+                    result.Add(new List<int> { nums1[0], nums2[i] });
+                }
+
+                return result;
+            }
+
+            //PriorityQueue<(int n1, int n2), int> q = new PriorityQueue<(int n1, int n2), int>(Comparer<int>.Create((x, y) => y - x));
+
+            int n1Index1 = 0;
+            int n1Index2 = 1;
+            int n2Index1 = 0;
+            int n2Index2 = 1;
+
+            int valSum = nums1[n1Index1] + nums2[n2Index1];
+
+            //q.Enqueue((nums1[n1Index1], nums2[n2Index1]), valSum);
+            result.Add(new List<int>() { nums1[n1Index1], nums2[n2Index1] });
+            k--;
+            while (k > 0 && n2Index2 < nums2.Length && n1Index2 < nums1.Length)
+            {
+                int n11 = nums1[n1Index1];
+                int n12 = nums1[n1Index2];
+                int n21 = nums2[n2Index1];
+                int n22 = nums2[n2Index2];
+
+                int sum1 = n11 + n22;
+                int sum2 = n21 + n12;
+
+                k--;
+                if (sum1 <= sum2)
+                {
+                    result.Add(new List<int> { n11, n22 });
+
+                    n2Index2++;
+                    if (n2Index2 == nums2.Length)
+                    {
+                        n1Index1++;
+                        n2Index2 = n2Index1 + 1;
+
+                        if (n1Index1 == nums1.Length) break;
+                    }
+
+                }
+                else
+                {
+
+                    result.Add(new List<int> { n21, n12 });
+
+                    n1Index2++;
+                    if (n1Index2 == nums1.Length)
+                    {
+                        n2Index1++;
+                        n1Index2 = n1Index1 + 1;
+
+                        if (n2Index1 == nums2.Length) break;
+                    }
+                }
+
+            }
+
+            if (k > 0)
+            {
+                //if(n2Index2 == )
+            }
+
+
+            //while (q.Count > 0)
+            //{
+            //    var c = q.Dequeue();
+
+            //    result.Add(new List<int>() { c.n1, c.n2 });
+            //}
+
+            return result;
+        }
+
         #endregion
 
-        #region Day 28 Problem
+        #region Day 28 Problem 864. Shortest Path to Get All Keys
+        public int ShortestPathAllKeys(string[] grid)
+        {
+            int m = grid.Length;
+            int n = grid[0].Length;
+            Queue<int[]> queue = new Queue<int[]>();
+            int[][] moves = new int[][] { new int[] { 0, 1 }, new int[] { 1, 0 }, new int[] { -1, 0 }, new int[] { 0, -1 } };
+
+            Dictionary<int, HashSet<(int, int)>> seen = new Dictionary<int, HashSet<(int, int)>>();
+
+            HashSet<char> keySet = new HashSet<char>();
+            HashSet<char> lockSet = new HashSet<char>();
+            int allKeys = 0;
+            int startR = -1, startC = -1;
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    char cell = grid[i][j];
+                    if (cell >= 'a' && cell <= 'f')
+                    {
+                        allKeys += (1 << (cell - 'a'));
+                        keySet.Add(cell);
+                    }
+                    if (cell >= 'A' && cell <= 'F')
+                    {
+                        lockSet.Add(cell);
+                    }
+                    if (cell == '@')
+                    {
+                        startR = i;
+                        startC = j;
+                    }
+                }
+            }
+
+            queue.Enqueue(new int[] { startR, startC, 0, 0 });
+            seen[0] = new HashSet<(int, int)>();
+            seen[0].Add((startR, startC));
+
+            while (queue.Count > 0)
+            {
+                int[] cur = queue.Dequeue();
+                int curR = cur[0], curC = cur[1], keys = cur[2], dist = cur[3];
+                foreach (int[] move in moves)
+                {
+                    int newR = curR + move[0], newC = curC + move[1];
+
+                    if (newR >= 0 && newR < m && newC >= 0 && newC < n && grid[newR][newC] != '#')
+                    {
+                        char cell = grid[newR][newC];
+
+                        if (keySet.Contains(cell))
+                        {
+                            if (((1 << (cell - 'a')) & keys) != 0)
+                            {
+                                continue;
+                            }
+
+                            int newKeys = (keys | (1 << (cell - 'a')));
+
+                            if (newKeys == allKeys)
+                            {
+                                return dist + 1;
+                            }
+
+                            if (!seen.ContainsKey(newKeys))
+                            {
+                                seen[newKeys] = new HashSet<(int, int)>();
+                            }
+
+                            seen[newKeys].Add((newR, newC));
+                            queue.Enqueue(new int[] { newR, newC, newKeys, dist + 1 });
+                        }
+
+                        if (lockSet.Contains(cell) && ((keys & (1 << (cell - 'A'))) == 0))
+                        {
+                            continue;
+                        }
+
+                        else if (!seen.ContainsKey(keys) || !seen[keys].Contains((newR, newC)))
+                        {
+                            if (!seen.ContainsKey(keys))
+                            {
+                                seen[keys] = new HashSet<(int, int)>();
+                            }
+
+                            seen[keys].Add((newR, newC));
+                            queue.Enqueue(new int[] { newR, newC, keys, dist + 1 });
+                        }
+                    }
+                }
+            }
+
+            return -1;
+        }
         #endregion
 
         #region Day 29 Problem
         #endregion
 
-        #region Day 30 Problem
+        #region Day 30 Problem 1970. Last Day Where You Can Still Cross
+        int[][] directions = new int[][] { new int[] { 0, 1 }, new int[] { 0, -1 }, new int[] { 1, 0 }, new int[] { -1, 0 } };
+        public int LatestDayToCross(int row, int col, int[][] cells)
+        {
+            int left = 1;
+            int right = row * col;
+
+            while (left < right)
+            {
+                int mid = right - (right - left) / 2;
+
+                if (canCross(row, col, cells, mid))
+                {
+                    left = mid;
+                }
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+            return left;
+        }
+
+        private bool canCross(int row, int col, int[][] cells, int mid)
+        {
+            int[,] grid = new int[row, col];
+
+            Queue<(int, int)> q = new Queue<(int, int)>();
+
+            for (int i = 0; i < mid; i++)
+            {
+                grid[cells[i][0] - 1, cells[i][1] - 1] = 1;
+            }
+
+            for (int i = 0; i < col; i++)
+            {
+                if (grid[0, i] == 0)
+                {
+                    q.Enqueue((0, i));
+                    grid[0, i] = -1;
+                }
+            }
+
+            while (q.Count > 0)
+            {
+                (int r, int c) = q.Dequeue();
+
+                if(r==row-1) { return true; }
+
+                foreach (int[] dir in directions)
+                {
+                    int newRow = r + dir[0];
+                    int newCol = c + dir[1];
+
+                    if(newRow>=0 && newRow<row && newCol>=0&&newCol < col && grid[newRow,newCol] == 0)
+                    {
+                        grid[newRow,newCol] = -1;
+                        q.Enqueue((newRow, newCol));
+                    }
+                }
+            }
+            return false;
+        }
         #endregion
 
         #region Weekly 348
