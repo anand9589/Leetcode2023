@@ -42,15 +42,15 @@
         #endregion
 
         #region Day 2 Problem 1601. Maximum Number of Achievable Transfer Requests
-        int result = 0;
+        int result_1601 = 0;
         public int MaximumRequests(int n, int[][] requests)
         {
             int[] buildings = new int[n];
-            helper(0, requests, 0, buildings);
-            return result;
+            helper_1601(0, requests, 0, buildings);
+            return result_1601;
         }
 
-        private void helper(int i, int[][] requests, int j, int[] buildings)
+        private void helper_1601(int i, int[][] requests, int j, int[] buildings)
         {
             if (i == requests.Length)
             {
@@ -59,18 +59,114 @@
                     if (n != 0) return;
                 }
 
-                result = Math.Max(result, j);
+                result_1601 = Math.Max(result_1601, j);
                 return;
             }
 
-            helper(i + 1, requests, j, buildings);
+            helper_1601(i + 1, requests, j, buildings);
             buildings[requests[i][0]]--;
             buildings[requests[i][1]]++;
-            helper(i + 1, requests, j + 1, buildings);
+            helper_1601(i + 1, requests, j + 1, buildings);
             buildings[requests[i][0]]++;
             buildings[requests[i][1]]--;
 
         }
+        #endregion
+
+        #region weekly-contest-352
+        //Problem 1 6909. Longest Even Odd Subarray With Threshold
+
+        public int LongestAlternatingSubarray(int[] nums, int threshold)
+        {
+            int l = 0;
+            int r = nums.Length - 1;
+            int ans = 0;
+            while (l < nums.Length)
+            {
+                int res = 0;
+                int k = l;
+                bool rsupdate = false;
+                while (k < nums.Length && nums[k] <= threshold && nums[k] % 2 == res % 2)
+                {
+                    rsupdate = true;
+                    k++;
+                    res++;
+                }
+                if (rsupdate)
+                {
+
+                    ans = Math.Max(ans, res);
+                    l = k;
+                }
+                else
+                {
+                    l++;
+                }
+            }
+
+            return ans;
+        }
+
+
+        //Problem 2 6916. Prime Pairs With Target Sum
+        public IList<IList<int>> FindPrimePairs(int n)
+        {
+            List<int> primeList = getPrimeNumber(n).ToList();
+            primeList.Insert(0, 2);
+
+            IList<IList<int>> res = new List<IList<int>>();
+
+            int l = 0;
+            int r = primeList.Count-1;
+
+            while (l<=r)
+            {
+                int n1 = primeList[l];
+                int n2 = primeList[r];
+
+                if (n1 + n2 == n)
+                {
+                    res.Add(new List<int> { n1, n2 });
+                    l++;
+                    r--;
+                }
+                else if (n1 + n2 > n)
+                {
+                    r--;
+                }
+                else
+                {
+                    l++;
+                }
+            }
+
+            return res;
+        }
+
+        private IEnumerable<int> getPrimeNumber(int n)
+        {
+            for (int i = 3; i <= n; i += 2)
+            {
+                if (isPrime(i))
+                {
+                    yield return i;
+                }
+            }
+        }
+
+        private bool isPrime(int n)
+        {
+            for (int i = 2; i <= Math.Sqrt(n); i++)
+            {
+                if (n % i == 0) return false;
+            }
+
+            return true;
+        }
+
+        //Problem 3
+
+        //Problem 4
         #endregion
     }
 }
