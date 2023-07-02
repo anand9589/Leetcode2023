@@ -40,5 +40,37 @@
 
         }
         #endregion
+
+        #region Day 2 Problem 1601. Maximum Number of Achievable Transfer Requests
+        int result = 0;
+        public int MaximumRequests(int n, int[][] requests)
+        {
+            int[] buildings = new int[n];
+            helper(0, requests, 0, buildings);
+            return result;
+        }
+
+        private void helper(int i, int[][] requests, int j, int[] buildings)
+        {
+            if (i == requests.Length)
+            {
+                foreach (int n in buildings)
+                {
+                    if (n != 0) return;
+                }
+
+                result = Math.Max(result, j);
+                return;
+            }
+
+            helper(i + 1, requests, j, buildings);
+            buildings[requests[i][0]]--;
+            buildings[requests[i][1]]++;
+            helper(i + 1, requests, j + 1, buildings);
+            buildings[requests[i][0]]++;
+            buildings[requests[i][1]]--;
+
+        }
+        #endregion
     }
 }
