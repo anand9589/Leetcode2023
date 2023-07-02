@@ -111,15 +111,62 @@
         //Problem 2 6916. Prime Pairs With Target Sum
         public IList<IList<int>> FindPrimePairs(int n)
         {
+
+            IList<IList<int>> res = new List<IList<int>>();
+
+            int l = 2;
+            while (l <= n / 2)
+            {
+
+                int r = n - l;
+                if (isPrime(r))
+                {
+                    res.Add(new List<int> { l, r });
+
+                }
+
+                if (l == 2)
+                {
+                    l++;
+                }
+                else
+                {
+                    l += 2;
+
+                }
+
+                while (!isPrime(l))
+                {
+
+                    l += 2;
+                }
+            }
+
+            return res;
+        }
+
+
+        private bool isPrime(int n)
+        {
+            for (int i = 2; i <= Math.Sqrt(n); i++)
+            {
+                if (n % i == 0) return false;
+            }
+
+            return true;
+        }
+
+        public IList<IList<int>> FindPrimePairs_V1(int n)
+        {
             List<int> primeList = getPrimeNumber(n).ToList();
             primeList.Insert(0, 2);
 
             IList<IList<int>> res = new List<IList<int>>();
 
             int l = 0;
-            int r = primeList.Count-1;
+            int r = primeList.Count - 1;
 
-            while (l<=r)
+            while (l <= r)
             {
                 int n1 = primeList[l];
                 int n2 = primeList[r];
@@ -154,19 +201,10 @@
             }
         }
 
-        private bool isPrime(int n)
-        {
-            for (int i = 2; i <= Math.Sqrt(n); i++)
-            {
-                if (n % i == 0) return false;
-            }
 
-            return true;
-        }
+        //Problem 3 6911. Continuous Subarrays
 
-        //Problem 3
-
-        //Problem 4
+        //Problem 4 6894. Sum of Imbalance Numbers of All Subarrays
         #endregion
     }
 }
