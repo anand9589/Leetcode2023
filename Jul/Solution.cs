@@ -73,6 +73,127 @@
         }
         #endregion
 
+        #region Day 5 Problem 1493. Longest Subarray of 1's After Deleting One Element
+        public int LongestSubarray(int[] nums)
+        {
+            int result = 0;
+            //Dictionary<int, int> map = new Dictionary<int, int>();
+            List<(int start, int end)> lst = new List<(int start, int end)>();
+            int i = 0;
+
+            while (i < nums.Length)
+            {
+                if (nums[i] == 1)
+                {
+                    int j = i;
+                    //map.Add(i, j++);
+
+                    while (j < nums.Length && nums[j] == 1)
+                    {
+                        j++;
+                    }
+
+                    lst.Add((i, j - 1));
+
+                    i = j;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            if (lst.Count == 0) return 0;
+
+            if (lst.Count == 1)
+            {
+                result = lst[0].end - lst[0].start + 1;
+
+                if (result == nums.Length) return result - 1;
+
+                return result;
+            }
+
+            for (int k = 1; k < lst.Count; k++)
+            {
+                if (lst[k].start - 2 == lst[k - 1].end)
+                {
+                    result = Math.Max(result, lst[k].end - lst[k - 1].start);
+                }
+                else
+                {
+                    result = Math.Max(result, lst[k].end - lst[k].start + 1);
+                }
+            }
+
+            return result;
+        }
+        #endregion
+
+        #region Day 6 Problem 209. Minimum Size Subarray Sum
+        public int MinSubArrayLen(int target, int[] nums)
+        {
+            int result = int.MaxValue;
+            if (nums[0] >= target) return 1;
+            int left = 0;
+            for (int right = 0; right < nums.Length; right++)
+            {
+                if (nums[right] >= target) return 1;
+
+
+            }
+
+            return result == int.MaxValue ? 0 : result;
+        }
+        public int MinSubArrayLen_V1(int target, int[] nums)
+        {
+            int result = int.MaxValue;
+
+            int i = 0;
+
+            while (nums[i] > target)
+            {
+                i++;
+            }
+
+            int sum = nums[i];
+
+            if (nums[i] == target) return 1;
+
+            for (int j = i + 1; j < nums.Length; j++)
+            {
+                while (nums[j] > target)
+                {
+                    j++;
+                    i = j;
+                }
+
+                if (nums[j] == target)
+                {
+                    return 1;
+                }
+                else
+                {
+                    sum += nums[j];
+                    if (sum == target)
+                    {
+                        result = Math.Min(result, j - i + 1);
+                    }
+                    else if (sum > target)
+                    {
+                        sum -= nums[i];
+                        sum -= nums[j];
+                        i++;
+                        j--;
+                    }
+                }
+            }
+
+
+            return result;
+        }
+        #endregion
+
         #region weekly-contest-352
         //Problem 1 6909. Longest Even Odd Subarray With Threshold
 
@@ -206,5 +327,28 @@
 
         //Problem 4 6894. Sum of Imbalance Numbers of All Subarrays
         #endregion
+
+        #region Problem 2762. Continuous Subarrays
+        public long ContinuousSubarrays(int[] nums)
+        {
+            long result = nums.Length;
+
+            int k = 0;
+
+            while (k < nums.Length)
+            {
+                int l = k;
+                int max = nums[l];
+                int min = nums[l];
+                while (l < nums.Length)
+                {
+
+                }
+            }
+
+            return result;
+        }
+        #endregion
+
     }
 }
