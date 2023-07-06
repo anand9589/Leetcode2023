@@ -131,20 +131,33 @@
         #endregion
 
         #region Day 6 Problem 209. Minimum Size Subarray Sum
+
         public int MinSubArrayLen(int target, int[] nums)
         {
             int result = int.MaxValue;
             if (nums[0] >= target) return 1;
             int left = 0;
-            for (int right = 0; right < nums.Length; right++)
+            int sum = nums[0];
+            for (int right = left + 1; right < nums.Length; right++)
             {
                 if (nums[right] >= target) return 1;
 
+                sum += nums[right];
 
+                if (sum >= target)
+                {
+                    while (sum >= target)
+                    {
+                        result = Math.Min(result, right - left + 1);
+
+                        sum -= nums[left++];
+                    }
+                }
             }
 
             return result == int.MaxValue ? 0 : result;
         }
+
         public int MinSubArrayLen_V1(int target, int[] nums)
         {
             int result = int.MaxValue;
