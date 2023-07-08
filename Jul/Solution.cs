@@ -241,6 +241,30 @@
         }
         #endregion
 
+        #region Day 8 Problem 2551. Put Marbles in Bags
+        public long PutMarbles(int[] weights, int k)
+        {
+            int n = weights.Length;
+            int[] pairweights = new int[n - 1];
+
+            for (int i = 0; i < n - 1; i++)
+            {
+                pairweights[i] = weights[i] + weights[i + 1];
+            }
+
+            Array.Sort(pairweights, 0, n - 1);
+
+            long result = 0;
+
+            for (int i = 0; i < k - 1; i++)
+            {
+                result += pairweights[n - 2 - i] - pairweights[i];
+            }
+
+            return result;
+        }
+        #endregion
+
         #region weekly-contest-352
         //Problem 1 6909. Longest Even Odd Subarray With Threshold
 
