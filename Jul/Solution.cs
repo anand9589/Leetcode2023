@@ -207,6 +207,40 @@
         }
         #endregion
 
+        #region Day 7 Problem 2024. Maximize the Confusion of an Exam
+        public int MaxConsecutiveAnswers(string answerKey, int k)
+        {
+
+            int result = k;
+
+            Dictionary<char, int> dic = new Dictionary<char, int>();
+            dic.Add('T', 0);
+            dic.Add('F', 0);
+
+            int left = 0;
+
+            while (left < answerKey.Length)
+            {
+                dic[answerKey[left++]]++;
+            }
+
+            left = 0;
+
+            for (int right = k; right < answerKey.Length; right++)
+            {
+                dic[answerKey[right]]++;
+
+                while (Math.Min(dic['T'], dic['F']) > k)
+                {
+                    dic[answerKey[left]]--;
+                }
+                result = Math.Max(result, right - left + 1);
+            }
+
+            return result;
+        }
+        #endregion
+
         #region weekly-contest-352
         //Problem 1 6909. Longest Even Odd Subarray With Threshold
 
