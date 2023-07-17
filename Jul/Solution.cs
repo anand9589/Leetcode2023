@@ -1,7 +1,11 @@
-﻿namespace Jul
+﻿using Common;
+
+namespace Jul
 {
     public class Solution
     {
+
+        int[][] dp2d;
         #region Day 1 Problem 2305. Fair Distribution of Cookies
         public int DistributeCookies(int[] cookies, int k)
         {
@@ -262,6 +266,299 @@
             }
 
             return result;
+        }
+        #endregion
+
+        #region Day 9 Problem 2272. Substring With Largest Variance
+        public int LargestVariance(string s)
+        {
+            int[] counter = new int[26];
+            int k = 0;
+            while (k < s.Length)
+            {
+                counter[s[k++] - 'a']++;
+            }
+
+            int globalMax = 0;
+
+            for (int i = 0; i < 26; i++)
+            {
+
+            }
+            return 0;
+        }
+        #endregion
+
+        #region Day 11 Problem 863. All Nodes Distance K in Binary Tree
+        public IList<int> DistanceK(TreeNode root, TreeNode target, int k)
+        {
+            IList<int> result = new List<int>();
+            if (k == 0) return new List<int>() { target.val };
+
+            Queue<(TreeNode node, int distance)> q = new Queue<(TreeNode node, int distance)>();
+            if (root.val == target.val)
+            {
+                q.Enqueue((root, 0));
+                while (q.Count > 0)
+                {
+
+                    (TreeNode node, int distance) = q.Dequeue();
+                    if (node != null)
+                    {
+                        if (distance == k)
+                        {
+                            result.Add(node.val);
+                        }
+                        else
+                        {
+                            distance++;
+                            q.Enqueue((node.left, distance));
+                            q.Enqueue((node.right, distance));
+
+                        }
+                    }
+                }
+            }
+            else
+            {
+                int targetNodeFromRoot = -1;
+                bool leftFloag = false;
+
+                if (root.left != null)
+                {
+                    q.Enqueue((root.left, 1));
+
+                    while (q.Count > 0)
+                    {
+                        (TreeNode node, int distance) = q.Dequeue();
+
+                        if (node.val == target.val)
+                        {
+                            targetNodeFromRoot = distance;
+                        }
+                        else
+                        {
+                        }
+                    }
+                }
+
+                if (root.right != null)
+                {
+
+                }
+            }
+            return result;
+        }
+        #endregion
+
+        #region Day 12 Problem 802. Find Eventual Safe States
+        public IList<int> EventualSafeNodes(int[][] graph)
+        {
+            IList<int> result = new List<int>();
+
+            Dictionary<int, int[]> map = new Dictionary<int, int[]>();
+            Dictionary<int, bool> safeNodeMap = new Dictionary<int, bool>();
+            List<int> terminalNodes = new List<int>();
+            for (int i = 0; i < graph.Length; i++)
+            {
+                map.Add(i, graph[i]);
+            }
+
+            map = map.OrderBy(x => x.Value.Length).ToDictionary(x => x.Key, x => x.Value);
+            foreach (var key in map.Keys)
+            {
+                if (terminalNodes.Contains(key)) continue;
+                bool safeNode = true;
+
+                foreach (var node in map[key])
+                {
+                }
+
+                if (safeNode)
+                {
+                    result.Add(key);
+                }
+            }
+
+            return result.OrderBy(x => x).ToList();
+        }
+        #endregion
+
+        #region Day 14 Problem 1218. Longest Arithmetic Subsequence of Given Difference
+        public int LongestSubsequence(int[] arr, int difference)
+        {
+            int result = 1;
+            Dictionary<int, int> keyValuePairs = new Dictionary<int, int>();
+
+            foreach (int x in arr)
+            {
+                keyValuePairs.TryGetValue(x - difference, out int p);
+
+                if (!keyValuePairs.ContainsKey(x))
+                {
+                    keyValuePairs.Add(x, 0);
+                }
+
+                keyValuePairs[x] = p + 1;
+
+                if(result< p + 1)
+                {
+                    result = p + 1;
+                }
+            }
+            return result;
+        }
+        public int LongestSubsequence_V1(int[] arr, int difference)
+        {
+            int n = arr.Length; Dictionary<int, int> keyValuePairs = null;
+
+            if (difference == 0)
+            {
+
+                keyValuePairs = arr.GroupBy(x => x).ToDictionary(x => x.Key, y => y.Count());
+            }
+            else
+            {
+                keyValuePairs = new Dictionary<int, int>();
+                for (int i = 0; i < n; i++)
+                {
+                    int k = arr[i] - difference;
+
+                    if (!keyValuePairs.ContainsKey(arr[i]))
+                    {
+                        keyValuePairs.Add(arr[i], 1);
+                    }
+
+                    if (keyValuePairs.ContainsKey(k))
+                    {
+                        keyValuePairs[arr[i]] = keyValuePairs[k] + 1;
+                    }
+                }
+            }
+
+
+            return keyValuePairs.Values.Max();
+
+        }
+        #endregion
+
+        #region Day 15 Problem 1751. Maximum Number of Events That Can Be Attended II
+        public int MaxValue(int[][] events, int k)
+        {
+            Array.Sort(events, (a, b) => (a[0] - b[0]));
+            dp2d = new int[k+1][];
+
+            for (int i = 0; i < dp2d.Length; i++)
+            {
+                dp2d[i] = Enumerable.Repeat(-1, dp2d[0].Length).ToArray();
+            }
+
+            return dfs(0, k, events);
+        }
+
+        private int dfs(int curIndex, int count, int[][] events)
+        {
+            if (count == 0 || curIndex == events.Length) return 0;
+
+            if (dp2d[count][curIndex]!=-1) return dp2d[count][curIndex];
+
+            int nextIndex = bisectRight(events, events[curIndex][1]);
+            dp2d[count][curIndex] = Math.Max(dfs(curIndex + 1, count, events), events[curIndex][2] + dfs(nextIndex, count - 1, events));
+            return dp2d[count][curIndex];
+        }
+
+        public int bisectRight(int[][] events, int target)
+        {
+            int left = 0, right = events.Length;
+            while (left < right)
+            {
+                int mid = (left + right) / 2;
+                if (events[mid][0] <= target)
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid;
+                }
+            }
+            return left;
+        }
+        #endregion
+
+        #region Day 16 Problem 1125. Smallest Sufficient Team
+        private int n;
+        private int[] skillsMaskOfPerson;
+        private long[] dp;
+        private long F(int skillsMask)
+        {
+            if (skillsMask == 0)
+            {
+                return 0L;
+            }
+            if (dp[skillsMask] != -1)
+            {
+                return dp[skillsMask];
+            }
+            for (int i = 0; i < n; i++)
+            {
+                int smallerSkillsMask = skillsMask & ~skillsMaskOfPerson[i];
+                if (smallerSkillsMask != skillsMask)
+                {
+                    long peopleMask = F(smallerSkillsMask) | (1L << i);
+                    if (dp[skillsMask] == -1 || CountBits(peopleMask) < CountBits(dp[skillsMask]))
+                    {
+                        dp[skillsMask] = peopleMask;
+                    }
+                }
+            }
+            return dp[skillsMask];
+        }
+
+        private int CountBits(long mask)
+        {
+            int count = 0;
+            while (mask != 0)
+            {
+                count += (int)(mask & 1);
+                mask >>= 1;
+            }
+            return count;
+        }
+
+        public int[] SmallestSufficientTeam(string[] req_skills, IList<IList<string>> people)
+        {
+            n = people.Count;
+            int m = req_skills.Length;
+            Dictionary<string, int> skillId = new Dictionary<string, int>();
+            for (int i = 0; i < m; i++)
+            {
+                skillId[req_skills[i]] = i;
+            }
+            skillsMaskOfPerson = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                foreach (string skill in people[i])
+                {
+                    skillsMaskOfPerson[i] |= 1 << skillId[skill];
+                }
+            }
+            dp = new long[1 << m];
+            for (int i = 0; i < dp.Length; i++)
+            {
+                dp[i] = -1;
+            }
+            long answerMask = F((1 << m) - 1);
+            int[] ans = new int[CountBits(answerMask)];
+            int ptr = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (((answerMask >> i) & 1) == 1)
+                {
+                    ans[ptr++] = i;
+                }
+            }
+            return ans;
         }
         #endregion
 
