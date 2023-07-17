@@ -401,7 +401,7 @@ namespace Jul
 
                 keyValuePairs[x] = p + 1;
 
-                if(result< p + 1)
+                if (result < p + 1)
                 {
                     result = p + 1;
                 }
@@ -446,7 +446,7 @@ namespace Jul
         public int MaxValue(int[][] events, int k)
         {
             Array.Sort(events, (a, b) => (a[0] - b[0]));
-            dp2d = new int[k+1][];
+            dp2d = new int[k + 1][];
 
             for (int i = 0; i < dp2d.Length; i++)
             {
@@ -460,7 +460,7 @@ namespace Jul
         {
             if (count == 0 || curIndex == events.Length) return 0;
 
-            if (dp2d[count][curIndex]!=-1) return dp2d[count][curIndex];
+            if (dp2d[count][curIndex] != -1) return dp2d[count][curIndex];
 
             int nextIndex = bisectRight(events, events[curIndex][1]);
             dp2d[count][curIndex] = Math.Max(dfs(curIndex + 1, count, events), events[curIndex][2] + dfs(nextIndex, count - 1, events));
@@ -560,6 +560,51 @@ namespace Jul
             }
             return ans;
         }
+        #endregion
+
+        #region Day 17 Problem 445. Add Two Numbers II
+        public ListNode AddTwoNumbers(ListNode l1, ListNode l2)
+        {
+            Stack<int> s1 = new Stack<int>();
+            Stack<int> s2 = new Stack<int>();
+            ListNode resultNode = new ListNode();
+            ListNode nextNode = null;
+            fillStack(l1, s1);
+            fillStack(l2, s2);
+
+            int carryOn = 0;
+            while (s1.Count > 0 || s2.Count > 0 || carryOn ==1)
+            {
+                s1.TryPop(out int num1);
+                s2.TryPop(out int num2);
+
+                int num = num1 + num2 + carryOn;
+                carryOn = 0;
+                if (num > 9)
+                {
+                    carryOn = 1;
+                    num -= 10;
+                }
+                resultNode = new ListNode(num, nextNode);
+                nextNode = resultNode;
+            }
+
+            return resultNode;
+        }
+
+        private void fillStack(ListNode l1, Stack<int> s1)
+        {
+            ListNode temp = new ListNode();
+
+            temp.next = l1;
+
+            while (temp.next != null)
+            {
+                s1.Push(temp.next.val);
+                temp = temp.next;
+            }
+        }
+
         #endregion
 
         #region weekly-contest-352
