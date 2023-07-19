@@ -573,7 +573,7 @@ namespace Jul
             fillStack(l2, s2);
 
             int carryOn = 0;
-            while (s1.Count > 0 || s2.Count > 0 || carryOn ==1)
+            while (s1.Count > 0 || s2.Count > 0 || carryOn == 1)
             {
                 s1.TryPop(out int num1);
                 s2.TryPop(out int num2);
@@ -605,6 +605,96 @@ namespace Jul
             }
         }
 
+        #endregion
+
+        #region Day 18 Problem 146. LRU Cache
+        public class LRUCache
+        {
+            DoublyLinkedList head;
+            DoublyLinkedList tail;
+            Dictionary<int, DoublyLinkedList> map;
+            private readonly int maxLength;
+
+            public LRUCache(int capacity)
+            {
+                maxLength = capacity;
+                map = new Dictionary<int, DoublyLinkedList>();
+                head = new DoublyLinkedList();
+                tail = new DoublyLinkedList();
+
+                head.Next = tail;
+                tail.Next = head;
+            }
+
+            public int Get(int key)
+            {
+                if (map.TryGetValue(key, out DoublyLinkedList l))
+                {
+                    if (map.Count > 1)
+                    {
+
+                        updatePosition(l);
+
+                    }
+
+                    return l.Value;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+
+            private void updatePosition(DoublyLinkedList l)
+            {
+                DoublyLinkedList lPrev = l.Previous;
+                DoublyLinkedList lNext = l.Next;
+
+                lPrev.Next = lNext;
+                lNext.Previous = lPrev;
+
+                DoublyLinkedList headNext = head.Next;
+                head.Next = l;
+                l.Previous = head;
+                l.Next = headNext;
+                headNext.Previous = l;
+            }
+
+            public void Put(int key, int value)
+            {
+                if (map.TryGetValue(key, out DoublyLinkedList l))
+                {
+                    if (map.Count > 1)
+                    {
+                        updatePosition(l);
+                    }
+                    l.Value = value;
+                }
+                else
+                {
+                    l = new DoublyLinkedList(key, value);
+                    if (map.Count() == maxLength)
+                    {
+
+                        DoublyLinkedList tailPrev = tail.Previous;
+                        int removeKey = tailPrev.Key;
+
+                        tailPrev.Previous.Next = tail;
+                        tail.Previous = tailPrev.Previous;
+
+
+
+                        map.Remove(removeKey);
+                    }
+                    DoublyLinkedList headNext = head.Next;
+                    l.Previous = head;
+                    headNext.Previous = l;
+                    l.Next = headNext;
+                    head.Next = l;
+                    map.Add(key, l);
+                }
+            }
+        }
         #endregion
 
         #region weekly-contest-352
@@ -760,6 +850,92 @@ namespace Jul
             }
 
             return result;
+        }
+        #endregion
+
+        #region Problem 2778. Sum of Squares of Special Elements
+
+        public int SumOfSquares(int[] nums)
+        {
+            int n = nums.Length;
+            int result = 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                if (n % i + 1 == 0) result += (nums[i] * nums[i]);
+            }
+            return result;
+        }
+
+        #endregion
+
+        #region Problem 2779. Maximum Beauty of an Array After Applying Operation
+
+        public int MaximumBeauty(int[] nums, int k)
+        {
+            int[] dp = new int[400001];
+            foreach (int i in nums)
+            //for (int i = 0; i < nums.Length; i++)
+            {
+                int mn = i - k;
+                int mx = i + k;
+
+                dp[100000 + mn]++;
+                dp[100000 + mx + 1]--;
+
+            }
+            int result = dp[0];
+
+            for (int i = 1; i <= 400000; i++)
+            {
+                dp[i] += dp[i - 1];
+                result = Math.Max(result, dp[i]);
+            }
+            return result;
+        }
+        #endregion
+
+        #region Problem 2780. Minimum Index of a Valid Split
+        public int MinimumIndex(IList<int> nums)
+        {
+            int n = nums.Count;
+
+            Dictionary<int, int> map = nums.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+
+            int max = 0;
+            int val = 0;
+
+            foreach (int key in map.Keys)
+            {
+                if (map[key] > max)
+                {
+                    val = key;
+                    max = map[key];
+                }
+            }
+
+            int freq = map[val];
+
+            int count = 0;
+
+            for (int i = 0; i < n - 1; i++)
+            {
+                if (nums[i] == val)
+                {
+                    freq--;
+                    count++;
+                }
+
+                int n1 = count * 2;
+                int n2 = freq * 2;
+
+                if ((n1 > (i + 1)) && (n2 > (n - i - 1)))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
         #endregion
 
