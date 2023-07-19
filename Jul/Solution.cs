@@ -697,6 +697,40 @@ namespace Jul
         }
         #endregion
 
+        #region Day 19 Problem 435. Non-overlapping Intervals
+        public int EraseOverlapIntervals(int[][] intervals)
+        {
+            int result = 0;
+
+            Array.Sort(intervals, (a, b) => a[0] - b[0]);
+
+            int n = intervals.Length;
+
+            int left = 0;
+            int right = 1;
+
+            while (right < n)
+            {
+                if (intervals[left][1] <= intervals[right][0])
+                {
+                    left = right++;
+
+                }
+                else if (intervals[left][1] <= intervals[right][1])
+                {
+                    result++;
+                    right++;
+                }
+                else if (intervals[left][1] > intervals[right][1])
+                {
+                    result++;
+                    left = right++;
+                }
+            }
+            return result;
+        }
+        #endregion
+
         #region weekly-contest-352
         //Problem 1 6909. Longest Even Odd Subarray With Threshold
 
