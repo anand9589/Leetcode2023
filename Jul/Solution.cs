@@ -745,22 +745,22 @@ namespace Jul
                 }
                 else
                 {
-                    while (stack.Count>0 && stack.Peek()>0 && asteroids[i]<0)
+                    while (stack.Count > 0 && stack.Peek() > 0 && asteroids[i] < 0)
                     {
                         int top = stack.Pop();
                         int sum = top + asteroids[i];
-                        if(sum == 0)
+                        if (sum == 0)
                         {
                             break;
                         }
                         else
                         {
-                            if(sum > 0)
+                            if (sum > 0)
                             {
                                 stack.Push(top);
                                 break;
                             }
-                            else
+                            else if (stack.Count == 0 || stack.Peek()<0)
                             {
                                 stack.Push(asteroids[i]);
                             }
