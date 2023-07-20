@@ -731,6 +731,54 @@ namespace Jul
         }
         #endregion
 
+        #region Day 20 Problem 735. Asteroid Collision
+
+        public int[] AsteroidCollision(int[] asteroids)
+        {
+            Stack<int> stack = new Stack<int>();
+
+            for (int i = 0; i < asteroids.Length; i++)
+            {
+                if (stack.Count == 0 || stack.Peek() < 0 || (stack.Peek() > 0 && asteroids[i] > 0))
+                {
+                    stack.Push(asteroids[i]);
+                }
+                else
+                {
+                    while (stack.Count>0 && stack.Peek()>0 && asteroids[i]<0)
+                    {
+                        int top = stack.Pop();
+                        int sum = top + asteroids[i];
+                        if(sum == 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            if(sum > 0)
+                            {
+                                stack.Push(top);
+                                break;
+                            }
+                            else
+                            {
+                                stack.Push(asteroids[i]);
+                            }
+                        }
+                    }
+                }
+            }
+            int[] result = new int[stack.Count];
+            int j = stack.Count - 1;
+
+            while (j >= 0)
+            {
+                result[j--] = stack.Pop();
+            }
+            return result;
+        }
+        #endregion
+
         #region weekly-contest-352
         //Problem 1 6909. Longest Even Odd Subarray With Threshold
 
