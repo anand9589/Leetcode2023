@@ -760,7 +760,7 @@ namespace Jul
                                 stack.Push(top);
                                 break;
                             }
-                            else if (stack.Count == 0 || stack.Peek()<0)
+                            else if (stack.Count == 0 || stack.Peek() < 0)
                             {
                                 stack.Push(asteroids[i]);
                             }
@@ -776,6 +776,67 @@ namespace Jul
                 result[j--] = stack.Pop();
             }
             return result;
+        }
+        #endregion
+
+        #region Day 22 Problem 688. Knight Probability in Chessboard
+        public double KnightProbability(int n, int k, int row, int column)
+        {
+            int[][] directions = new int[][]
+            {
+                new int[]{2,1},
+                new int[]{2,-1},
+                new int[]{-2,1},
+                new int[]{-2,-1},
+                new int[]{1,2},
+                new int[]{1,-2},
+                new int[]{-1,2},
+                new int[]{-1,-2},
+            };
+            double[,] current = new double[n, n];
+            current[row, column] = 1;
+
+            double[,] next = new double[n, n];
+
+            while (k-- > 0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < n; j++)
+                    {
+                        if (current[i, j] != 0)
+                        {
+                            foreach (int[] dir in directions)
+                            {
+                                if (isValid(i, j, n, dir[0], dir[1]))
+                                {
+                                    next[i + dir[0], j + dir[1]] += current[i, j] / 8;
+                                }
+                            }
+                        }
+                    }
+                }
+                current = next;
+
+                next = new double[n, n];
+            }
+
+            double result = 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    result += current[i, j];
+                }
+            }
+
+            return result;
+        }
+
+        private bool isValid(int i, int j, int n, int v1, int v2)
+        {
+            return i + v1 >= 0 && i + v1 < n && j + v2 >= 0 && j + v2 < n;
         }
         #endregion
 
