@@ -857,14 +857,14 @@ namespace Jul
             for (int i = 1; i < n; i += 2)
             {
                 IList<TreeNode> leftList = AllPossibleFBT(i);
-                IList<TreeNode> rightList = AllPossibleFBT(n-i-1);
+                IList<TreeNode> rightList = AllPossibleFBT(n - i - 1);
 
                 foreach (TreeNode left in leftList)
                 {
                     foreach (TreeNode right in rightList)
                     {
                         TreeNode root = new TreeNode(0, left, right);
-                        result.Add(root);   
+                        result.Add(root);
                     }
                 }
             }
@@ -899,28 +899,39 @@ namespace Jul
 
         #region Day 29 808. Soup Servings
         int[,] portions;
+        double[][] dp1;
         public double SoupServings(int n)
         {
+            if (n > 4800) return 1;
+            dp1 = new double[n + 1][];
+            for (int i = 0; i < n + 1; i++)
+            {
+                dp1[i] = Enumerable.Repeat(-1, n + 1).Cast<double>().ToArray();
+            }
+
             portions = new int[,] { { 100, 0 }, { 75, 25 }, { 50, 50 }, { 25, 75 } };
             return solve(n, n);
         }
 
         private double solve(int a, int b)
         {
-            if(a<=0 && b<=0) return 0.5;
+            if (a <= 0 && b <= 0) return 0.5;
 
             if (a <= 0) return 1;
 
-            if(b <= 0) return 0;
+            if (b <= 0) return 0;
+
+
+            if (dp1[a][b] != -1) return dp1[a][b];
 
             double res = 0;
 
             for (int i = 0; i < 4; i++)
             {
-                res+= solve(a - portions[i,0], b - portions[i,1]);
+                res += solve(a - portions[i, 0], b - portions[i, 1]);
             }
 
-            return res * 0.25;
+            return dp1[a][b] = res * 0.25;
         }
         #endregion
 
