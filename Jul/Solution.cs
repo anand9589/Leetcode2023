@@ -840,6 +840,90 @@ namespace Jul
         }
         #endregion
 
+        #region Day 23 Problem 894. All Possible Full Binary Trees
+        Dictionary<int, IList<TreeNode>> map = new Dictionary<int, IList<TreeNode>>();
+
+
+        public IList<TreeNode> AllPossibleFBT(int n)
+        {
+            if (n % 2 == 0) return new List<TreeNode>();
+
+            if (n == 1) return new List<TreeNode>() { new TreeNode(0, null, null) };
+
+            if (map.ContainsKey(n)) return map[n];
+
+            IList<TreeNode> result = new List<TreeNode>();
+
+            for (int i = 1; i < n; i += 2)
+            {
+                IList<TreeNode> leftList = AllPossibleFBT(i);
+                IList<TreeNode> rightList = AllPossibleFBT(n-i-1);
+
+                foreach (TreeNode left in leftList)
+                {
+                    foreach (TreeNode right in rightList)
+                    {
+                        TreeNode root = new TreeNode(0, left, right);
+                        result.Add(root);   
+                    }
+                }
+            }
+            map.Add(n, result);
+
+            return result;
+        }
+        #endregion
+
+        #region Day 28 486. Predict the Winner
+        public bool PredictTheWinner(int[] nums)
+        {
+
+            int n = nums.Length;
+
+            return maxDiff(nums, 0, n - 1, n) >= 0;
+        }
+        private int maxDiff(int[] nums, int left, int right, int n)
+        {
+            if (left == right)
+            {
+                return nums[left];
+            }
+
+            int scoreByLeft = nums[left] - maxDiff(nums, left + 1, right, n);
+            int scoreByRight = nums[right] - maxDiff(nums, left, right - 1, n);
+
+            return Math.Max(scoreByLeft, scoreByRight);
+        }
+        #endregion
+
+
+        #region Day 29 808. Soup Servings
+        int[,] portions;
+        public double SoupServings(int n)
+        {
+            portions = new int[,] { { 100, 0 }, { 75, 25 }, { 50, 50 }, { 25, 75 } };
+            return solve(n, n);
+        }
+
+        private double solve(int a, int b)
+        {
+            if(a<=0 && b<=0) return 0.5;
+
+            if (a <= 0) return 1;
+
+            if(b <= 0) return 0;
+
+            double res = 0;
+
+            for (int i = 0; i < 4; i++)
+            {
+                res+= solve(a - portions[i,0], b - portions[i,1]);
+            }
+
+            return res * 0.25;
+        }
+        #endregion
+
         #region weekly-contest-352
         //Problem 1 6909. Longest Even Odd Subarray With Threshold
 
@@ -1079,6 +1163,40 @@ namespace Jul
             }
 
             return -1;
+        }
+        #endregion
+
+        #region weekly-contest-355
+        public IList<string> SplitWordsBySeparator(IList<string> words, char separator)
+        {
+            List<string> result = new List<string>();
+
+            foreach (string word in words)
+            {
+                result.AddRange(word.Split(separator, StringSplitOptions.RemoveEmptyEntries));
+            }
+
+            return result;
+        }
+
+        public long MaxArrayValue(int[] nums)
+        {
+            long result = 0;
+            List<long> list = nums.Select(x => (long)x).ToList();
+            int i = list.Count - 1;
+
+            while (i > 0)
+            {
+                if (list[i] > list[i - 1])
+                {
+                    list[i - 1] += list[i];
+                    result = Math.Max(result, list[i - 1]);
+                    list.RemoveAt(i);
+                }
+                i--;
+            }
+
+            return result;
         }
         #endregion
 
