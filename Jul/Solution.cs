@@ -896,7 +896,6 @@ namespace Jul
         }
         #endregion
 
-
         #region Day 29 808. Soup Servings
         int[,] portions;
         double[][] dp1;
@@ -910,10 +909,10 @@ namespace Jul
             }
 
             portions = new int[,] { { 100, 0 }, { 75, 25 }, { 50, 50 }, { 25, 75 } };
-            return solve(n, n);
+            return solve808(n, n);
         }
 
-        private double solve(int a, int b)
+        private double solve808(int a, int b)
         {
             if (a <= 0 && b <= 0) return 0.5;
 
@@ -928,11 +927,102 @@ namespace Jul
 
             for (int i = 0; i < 4; i++)
             {
-                res += solve(a - portions[i, 0], b - portions[i, 1]);
+                res += solve808(a - portions[i, 0], b - portions[i, 1]);
             }
 
             return dp1[a][b] = res * 0.25;
         }
+        #endregion
+
+        #region Day 30 664. Strange Printer
+        int[][] dp2;
+        public int StrangePrinter(string s)
+        {
+            char[] chars = s.ToCharArray();
+            int n = chars.Length;
+            dp2 = new int[n + 1][];
+
+            for (int i = 0; i < n + 1; i++)
+            {
+                dp2[i] = Enumerable.Repeat(-1, n + 1).ToArray();
+            }
+
+            return solve(0, n - 1, chars);
+        }
+
+        private int solve(int l, int r, char[] chars)
+        {
+            if (l == r) return dp2[l][r] = 1;
+            if (l > r) return dp2[l][r] = 0;
+
+            int i = l + 1;
+            if (dp2[l][r] != -1) return dp2[l][r];
+
+            while (i <= r && chars[i] == chars[l])
+            {
+                i++;
+            }
+
+            if (i == r + 1)
+            {
+                return 1;
+            }
+
+            int basic = 1 + solve(i, r, chars);
+
+            int k = int.MaxValue;
+
+            for (int j = i; j <= r; j++)
+            {
+                if (chars[j] == chars[l])
+                {
+                    int ans = solve(i, j - 1, chars) + solve(j, r, chars);
+                    k = Math.Min(k, ans);
+                }
+            }
+
+            return dp2[l][r] = Math.Min(k, basic);
+        }
+        #endregion
+
+        #region Day 31 712. Minimum ASCII Delete Sum for Two Strings
+
+        public int MinimumDeleteSum(string s1, string s2)
+        {
+            int[][] dp = new int[s2.Length + 1][];
+            for (int i = 0; i <= s2.Length; i++)
+            {
+                dp[i] = new int[s1.Length + 1];
+            }
+            int k = s1.Length;
+            for (int j = s1.Length - 1; j >= 0; j--)
+            {
+                dp[s2.Length][j] = dp[s2.Length][j + 1] + s1[--k];
+            }
+            k = s2.Length;
+            for (int j = s2.Length - 1; j >= 0; j--)
+            {
+                dp[j][s1.Length] = dp[j + 1][s1.Length] + s2[--k];
+            }
+
+            for (int i = s2.Length - 1; i >= 0; i--)
+            {
+                for (int j = s1.Length - 1; j >= 0; j--)
+                {
+                    int val = dp[i + 1][j + 1];
+                    if (s2[i] != s1[j])
+                    {
+                        int s1Val = s1[j] + dp[i][j + 1];
+                        int s2Val = s2[i] + dp[i + 1][j];
+
+                        val = Math.Min(s1Val, s2Val);
+                    }
+                    dp[i][j] = val;
+                }
+            }
+            return dp[0][0];
+        }
+
         #endregion
 
         #region weekly-contest-352
