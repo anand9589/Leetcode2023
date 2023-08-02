@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\LeetCodeWeekly\LeetCode\Common\Common.csproj" />
-    <ProjectReference Include="..\Jul\Jul.csproj" />
+    <ProjectReference Include="..\Aug\Aug.csproj" />
   </ItemGroup>
 
 </Project>
