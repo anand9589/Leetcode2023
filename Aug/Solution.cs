@@ -49,26 +49,34 @@
         {
             IList<IList<int>> result = new List<IList<int>>();
 
-            permute_helper(result, new List<int>(), nums, 0);
+            permute_helper(result, nums, 0);
+
             return result;
         }
 
-        private void permute_helper(IList<IList<int>> result, IList<int> lst, int[] nums, int index)
+        private void permute_helper(IList<IList<int>> result, int[] nums, int index)
         {
-            if (lst.Contains(nums[index])) return;
-            if (lst.Count == nums.Length)
+            if (index == nums.Length)
             {
-                result.Add(new List<int>(lst));
+                result.Add(new List<int>(nums));
                 return;
             }
 
-            for (int i = 0; i < nums.Length; i++)
+            for (int i = index+1; i < nums.Length; i++)
             {
-                if (i == index) continue;
-                lst.Add(nums[i]);
-                permute_helper(result, lst, nums, i+1);
-                lst.Remove(nums[i]);
+                swap(nums, index, i);
+                permute_helper(result, nums, i + 1);
+                swap(nums, index, i);
             }
+        }
+
+        private void swap(int[] nums, int i, int j)
+        {
+            if (i < 0 || j < 0 || i >= nums.Length || j >= nums.Length) return;
+
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
         }
 
 
