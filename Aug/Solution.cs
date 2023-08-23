@@ -1,4 +1,5 @@
 ﻿using Common;
+using System.Globalization;
 using System.Text;
 
 namespace Aug
@@ -360,9 +361,9 @@ namespace Aug
         #region Day 14. 215. Kth Largest Element in an Array
         public int FindKthLargest(int[] nums, int k)
         {
-            PriorityQueue<int,int> pq = new PriorityQueue<int, int>();
+            PriorityQueue<int, int> pq = new PriorityQueue<int, int>();
             int i = 0;
-            while (k-->0)
+            while (k-- > 0)
             {
                 pq.Enqueue(nums[i], nums[i++]);
             }
@@ -390,6 +391,300 @@ namespace Aug
         }
         #endregion
 
+        #region Day 16 239. Sliding Window Maximum
+        public int[] MaxSlidingWindow(int[] nums, int k)
+        {
+            int[] result = new int[nums.Length - k + 1];
+
+            int i = 0;
+            LinkedList<int> l = new LinkedList<int>();
+            int tempK = k;
+            while (k-- > 0)
+            {
+                while (l.Count > 0 && nums[l.Last()] < nums[i])
+                {
+                    l.RemoveLast();
+                }
+                l.AddLast(i);
+                i++;
+            }
+
+            int index = -1;
+            while (++index < result.Length)
+            {
+                result[index] = nums[l.First()];
+                if (l.First() == index)
+                {
+                    l.RemoveFirst();
+                }
+
+                while (i < nums.Length && l.Count > 0 && nums[l.Last()] < nums[i])
+                {
+                    l.RemoveLast();
+                }
+                l.AddLast(i);
+                i++;
+            }
+
+
+            return result;
+        }
+        #endregion
+
+        #region Day 17 542. 01 Matrix
+
+        public int[][] UpdateMatrix(int[][] mat)
+        {
+            Queue<(int x, int y)> q = new Queue<(int x, int y)>();
+            for (int i = 0; i < mat.Length; i++)
+            {
+                for (int j = 0; j < mat[i].Length; j++)
+                {
+                    if (mat[i][j] == 1)
+                    {
+                        mat[i][j] = -1;
+                    }
+                    else
+                    {
+                        q.Enqueue((i, j));
+                    }
+                }
+            }
+
+            while (q.Count > 0)
+            {
+                var cell = q.Dequeue();
+                int cellValue = mat[cell.x][cell.y];
+
+                if (cell.x - 1 >= 0 && mat[cell.x - 1][cell.y] == -1)
+                {
+                    q.Enqueue((cell.x - 1, cell.y));
+                    mat[cell.x - 1][cell.y] = cellValue + 1;
+                }
+
+                if (cell.y - 1 >= 0 && mat[cell.x][cell.y - 1] == -1)
+                {
+                    q.Enqueue((cell.x, cell.y - 1));
+                    mat[cell.x][cell.y - 1] = cellValue + 1;
+                }
+
+                if (cell.x + 1 >= 0 && mat[cell.x + 1][cell.y] == -1)
+                {
+                    q.Enqueue((cell.x + 1, cell.y));
+                    mat[cell.x + 1][cell.y] = cellValue + 1;
+                }
+
+                if (cell.y + 1 >= 0 && mat[cell.x][cell.y + 1] == -1)
+                {
+                    q.Enqueue((cell.x, cell.y + 1));
+                    mat[cell.x][cell.y + 1] = cellValue + 1;
+                }
+            }
+            return mat;
+        }
+
+        //private int calculateCell(int[][] mat, int i, int j)
+        //{
+        //    int min = int.MaxValue;
+        //    if (i - 1 >= 0 && !visited[i - 1, j])
+        //    {
+        //        if (mat[i - 1][j] == 0) return 1;
+        //        if (!visited[i - 1, j])
+        //        {
+        //            visited[i - 1, j] = true;
+        //            mat[i - 1][j] = calculateCell(mat, i - 1, j);
+        //        }
+        //        min = Math.Min(min, mat[i - 1][j]);
+        //    }
+        //    if (j - 1 >= 0)
+        //    {
+        //        if (mat[i][j - 1] == 0) return 1;
+        //        if (!visited[i, j - 1])
+        //        {
+        //            visited[i, j - 1] = true;
+        //            mat[i][j - 1] = calculateCell(mat, i, j - 1);
+        //        }
+        //        min = Math.Min(min, mat[i][j - 1]);
+        //    }
+        //    if (i + 1 < mat.Length)
+        //    {
+        //        if (mat[i + 1][j] == 0) return 1;
+        //        if (!visited[i + 1, j])
+        //        {
+        //            mat[i + 1][j] = calculateCell(mat, i + 1, j);
+        //        }
+        //        min = Math.Min(min, mat[i + 1][j]);
+        //    }
+        //    if (j + 1 < mat[i].Length)
+        //    {
+        //        if (mat[i][j + 1] == 0) return 1;
+        //        mat[i][j + 1] = calculateCell(mat, i, j + 1);
+        //        min = Math.Min(min, mat[i][j + 1]);
+        //    }
+        //    return min + 1;
+        //}
+        #endregion
+
+        #region Day 19 1489. Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree
+
+        internal class UnionFind
+        {
+            int[] parent;
+            int cost;
+            int setCount;
+            public UnionFind(int n)
+            {
+                this.parent = Enumerable.Range(0, n).ToArray();
+                this.cost = 0;
+                this.setCount = n;
+            }
+
+            public void ProcessEdge(int[] arr)
+            {
+                int p1 = findParent(arr[0]);
+                int p2 = findParent(arr[1]);
+
+                if (p1 != p2)
+                {
+                    parent[p1] = p2;
+                    setCount--;
+
+                    cost += arr[2];
+                }
+            }
+
+            private int findParent(int c)
+            {
+                if (parent[c] == c) return c;
+
+                return findParent(parent[c]);
+
+            }
+
+            internal int GetCost()
+            {
+                return setCount > 1 ? int.MaxValue : cost;
+            }
+        }
+
+        public IList<IList<int>> FindCriticalAndPseudoCriticalEdges(int n, int[][] edges)
+        {
+            IList<IList<int>> result = new List<IList<int>>();
+            IList<int> critical = new List<int>();
+            IList<int> pseudoCritical = new List<int>();
+
+            result.Add(critical);
+            result.Add(pseudoCritical);
+
+            UnionFind uf = new UnionFind(n);
+
+            Dictionary<int, int[]> edgeDictionary = new Dictionary<int, int[]>();
+
+            for (int i = 0; i < edges.Length; i++)
+            {
+                edgeDictionary.Add(i, edges[i]);
+            }
+
+            edgeDictionary = edgeDictionary.OrderBy(x => x.Value[2]).ToDictionary(x => x.Key, x => x.Value);
+            foreach (int key in edgeDictionary.Keys)
+            {
+                uf.ProcessEdge(edgeDictionary[key]);
+            }
+
+            int mst = uf.GetCost();
+
+            for (int i = 0; i < edgeDictionary.Keys.Count; i++)
+            {
+
+                uf = new UnionFind(n);
+                foreach (var key in edgeDictionary.Keys)
+                {
+                    if (key == i) continue;
+                    uf.ProcessEdge(edgeDictionary[key]);
+                }
+
+                int excludeCost = uf.GetCost();
+                if (excludeCost > mst)
+                {
+                    critical.Add(i);
+                }
+                else
+                {
+                    uf = new UnionFind(n);
+                    uf.ProcessEdge(edgeDictionary[i]);
+
+                    foreach (var key in edgeDictionary.Keys)
+                    {
+                        if (key == i) continue;
+                        uf.ProcessEdge(edgeDictionary[key]);
+                    }
+                    int includeCost = uf.GetCost();
+                    if (includeCost == mst)
+                    {
+                        pseudoCritical.Add(i);
+                    }
+                }
+            }
+
+            return result;
+        }
+        #endregion
+
+        #region Day 23 767. Reorganize String
+        public string ReorganizeString(string s)
+        {
+            Dictionary<char, int> map = new Dictionary<char, int>();
+
+            foreach (char c in s)
+            {
+                if (!map.ContainsKey(c))
+                {
+                    map.Add(c, 0);
+                }
+                map[c]++;
+            }
+
+            PriorityQueue<(char ch, int count), int> q = new PriorityQueue<(char, int), int>(Comparer<int>.Create((x, y) => y - x));
+
+            foreach (char key in map.Keys)
+            {
+                q.Enqueue((key, map[key]), map[key]);
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            while (q.Count > 1)
+            {
+                var char1 = q.Dequeue();
+                var char2 = q.Dequeue();
+
+
+                stringBuilder.Append(char1.ch);
+                stringBuilder.Append(char2.ch);
+
+                if (char1.count > 1)
+                {
+                    q.Enqueue((char1.ch, char1.count - 1), char1.count - 1);
+                }
+
+                if (char2.count > 1)
+                {
+                    q.Enqueue((char2.ch, char2.count - 1), char2.count - 1);
+                }
+            }
+
+            if (q.Count == 1)
+            {
+                var char3 = q.Dequeue();
+                stringBuilder.Append(char3.ch);
+
+                if (char3.count > 1) { return string.Empty; }
+
+            }
+
+            return stringBuilder.ToString();
+        }
+        #endregion
 
         #region weekly-contest-357
         public string FinalString(string s)
@@ -453,6 +748,214 @@ namespace Aug
             return result;
         }
         #endregion
+
+        #region weekly-contest-359
+        public bool IsAcronym(IList<string> words, string s)
+        {
+            if (s.Length != words.Count) return false;
+
+            int i = 0;
+
+            while (i < s.Length)
+            {
+                if (words[i][0] != s[i]) return false; i++;
+            }
+            return true;
+        }
+
+        public int MinimumSum(int n, int k)
+        {
+            HashSet<int> nums = new HashSet<int>();
+            int next = 1;
+            while (n-- > 0)
+            {
+                int d = k - next;
+                if (nums.Contains(d))
+                {
+                    n++;
+                }
+                else
+                {
+                    nums.Add(next);
+
+                }
+                next++;
+            }
+
+            return nums.Sum();
+        }
+
+        public int LongestEqualSubarray(IList<int> nums, int k)
+        {
+            Dictionary<int, List<int>> map = new Dictionary<int, List<int>>();
+
+
+            for (int i = 0; i < nums.Count; i++)
+            {
+                if (!map.ContainsKey(nums[i]))
+                {
+                    map.Add(nums[i], new List<int>());
+                }
+                map[nums[i]].Add(i);
+            }
+
+
+            foreach (int i in map.Keys)
+            {
+
+            }
+
+            int startIndex = 0, endIndex = 0;
+            int result = 0;
+            while (startIndex < nums.Count - result)
+            {
+                int num = nums[startIndex];
+                endIndex = startIndex + 1;
+                int x = k;
+                int count = 1;
+                while (endIndex < nums.Count && x >= 0)
+                {
+                    if (nums[endIndex] != num)
+                    {
+                        x--;
+
+                    }
+                    else
+                    {
+                        count++;
+                    }
+                    endIndex++;
+                }
+                result = Math.Max(result, count);
+                startIndex++;
+            }
+            return result;
+
+        }
+        #endregion
+
+
+        public bool RepeatedSubstringPattern(string s)
+        {
+            if (s.Length <= 1) return false;
+
+            int i = 0;
+
+            while (i < s.Length)
+            {
+                int count = i + 1;
+                string ss = s.Substring(0, count);
+                int j = count;
+                while (j + count <= s.Length)
+                {
+                    if (ss != s.Substring(j, count))
+                    {
+                        break;
+                    }
+
+                    j += count;
+                    if (j == s.Length) return true;
+                }
+                i++;
+            }
+            return false;
+        }
+
+
+        public int[] SortItems(int n, int m, int[] group, List<List<int>> beforeItems)
+        {
+            int groupId = m;
+            for (int i = 0; i < n; i++)
+            {
+                if (group[i] == -1)
+                {
+                    group[i] = groupId;
+                    groupId++;
+                }
+            }
+
+            Dictionary<int, List<int>> itemGraph = new Dictionary<int, List<int>>();
+            int[] itemIndegree = new int[n];
+            for (int i = 0; i < n; ++i)
+            {
+                itemGraph.Add(i, new List<int>());
+            }
+
+            Dictionary<int, List<int>> groupGraph = new Dictionary<int, List<int>>();
+            int[] groupIndegree = new int[groupId];
+            for (int i = 0; i < groupId; ++i)
+            {
+                groupGraph[i] = new List<int>();
+            }
+
+            for (int curr = 0; curr < n; curr++)
+            {
+                foreach (int prev in beforeItems[curr])
+                {
+                    itemGraph[prev].Add(curr);
+                    itemIndegree[curr]++;
+
+                    if (group[curr] != group[prev])
+                    {
+                        groupGraph[group[prev]].Add(group[curr]);
+                        groupIndegree[group[curr]]++;
+                    }
+                }
+            }
+
+            List<int> itemOrder = TopologicalSort(itemGraph, itemIndegree);
+            List<int> groupOrder = TopologicalSort(groupGraph, groupIndegree);
+
+            if (itemOrder.Count == 0 || groupOrder.Count == 0)
+            {
+                return new int[0];
+            }
+
+            Dictionary<int, List<int>> orderedGroups = new Dictionary<int, List<int>>();
+            foreach (int item in itemOrder)
+            {
+                orderedGroups[group[item]] = orderedGroups.GetValueOrDefault(group[item], new List<int>());
+                orderedGroups[group[item]].Add(item);
+            }
+
+            List<int> answerList = new List<int>();
+            foreach (int groupIndex in groupOrder)
+            {
+                answerList.AddRange(orderedGroups.GetValueOrDefault(groupIndex, new List<int>()));
+            }
+
+            return answerList.ToArray();
+        }
+
+        private List<int> TopologicalSort(Dictionary<int, List<int>> graph, int[] indegree)
+        {
+            List<int> visited = new List<int>();
+            Stack<int> stack = new Stack<int>();
+            foreach (int key in graph.Keys)
+            {
+                if (indegree[key] == 0)
+                {
+                    stack.Push(key);
+                }
+            }
+
+            while (stack.Count > 0)
+            {
+                int curr = stack.Pop();
+                visited.Add(curr);
+
+                foreach (int prev in graph[curr])
+                {
+                    indegree[prev]--;
+                    if (indegree[prev] == 0)
+                    {
+                        stack.Push(prev);
+                    }
+                }
+            }
+
+            return visited.Count == graph.Count ? visited : new List<int>();
+        }
         public static int countGroups(List<string> related)
         {
             int n = related.Count;
