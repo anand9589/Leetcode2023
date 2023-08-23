@@ -631,7 +631,7 @@ namespace Aug
         #endregion
 
         #region Day 23 767. Reorganize String
-        public string ReorganizeString(string s)
+        public string ReorganizeString_V1(string s)
         {
             Dictionary<char, int> map = new Dictionary<char, int>();
 
@@ -683,6 +683,35 @@ namespace Aug
             }
 
             return stringBuilder.ToString();
+        }
+
+        public string ReorganizeString(string s)
+        {
+            char[] chars = new char[s.Length];
+            Dictionary<char, int> charCount = s.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+
+            charCount = charCount.OrderByDescending(x=>x.Value).ToDictionary(x => x.Key, x => x.Value);
+            
+            if(charCount.First().Value>(s.Length+1)/2) return string.Empty;
+
+            int i = 0;
+            foreach (char key in charCount.Keys)
+            {
+                while (charCount[key] > 0)
+                {
+                    if (i >= chars.Length)
+                    {
+                        i = 1;
+                    }
+                    chars[i] = key;
+                    charCount[key]--;
+                    i += 2;                   
+
+                }
+            }
+
+
+            return new string(chars);
         }
         #endregion
 
