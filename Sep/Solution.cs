@@ -1,6 +1,6 @@
 ﻿namespace Sep
 {
-    public class Class1
+    public class Solution
     {
 
     }
