@@ -690,9 +690,9 @@ namespace Aug
             char[] chars = new char[s.Length];
             Dictionary<char, int> charCount = s.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
 
-            charCount = charCount.OrderByDescending(x=>x.Value).ToDictionary(x => x.Key, x => x.Value);
-            
-            if(charCount.First().Value>(s.Length+1)/2) return string.Empty;
+            charCount = charCount.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
+            if (charCount.First().Value > (s.Length + 1) / 2) return string.Empty;
 
             int i = 0;
             foreach (char key in charCount.Keys)
@@ -705,7 +705,7 @@ namespace Aug
                     }
                     chars[i] = key;
                     charCount[key]--;
-                    i += 2;                   
+                    i += 2;
 
                 }
             }
@@ -715,6 +715,276 @@ namespace Aug
         }
         #endregion
 
+        #region Day 24 68. Text Justification
+        public IList<string> FullJustify(string[] words, int maxWidth)
+        {
+            IList<string> result = new List<string>();
+
+            if (words.Length == 1)
+            {
+                if (words[0].Length < maxWidth)
+                {
+                    words[0] = words[0] + (GetSpaceString(maxWidth - words[0].Length));
+                }
+                result.Add(words[0]);
+                return result;
+            }
+            //int noOfWords = 1;
+            IList<int> indexes = new List<int>();
+            StringBuilder stringBuilder = new StringBuilder(words[0]);
+            for (int i = 1; i < words.Length; i++)
+            {
+                if (stringBuilder.Length + indexes.Count + words[i].Length + 1 > maxWidth)
+                {
+                    addString(maxWidth, result, indexes, stringBuilder);
+                    stringBuilder.Append(words[i]);
+                }
+                else
+                {
+                    indexes.Add(stringBuilder.Length);
+                    stringBuilder.Append(words[i]);
+                }
+
+            }
+            if (stringBuilder.Length > 0)
+            {
+                for (int k = indexes.Count - 1; k >= 0; k++)
+                {
+                    stringBuilder.Insert(indexes[k], ' ');
+                }
+
+                if (stringBuilder.Length < maxWidth)
+                {
+                    stringBuilder.Append(GetSpaceString(maxWidth - stringBuilder.Length));
+                }
+                result.Add(stringBuilder.ToString());
+            }
+            return result;
+        }
+
+        private void addString(int maxWidth, IList<string> result, IList<int> indexes, StringBuilder stringBuilder)
+        {
+            if (indexes.Count == 0)
+            {
+                if (stringBuilder.Length < maxWidth)
+                {
+                    stringBuilder.Append(GetSpaceString(maxWidth - stringBuilder.Length));
+                }
+            }
+            else
+            {
+                int remainingWidth = maxWidth - stringBuilder.Length;
+
+                int spaceCount = remainingWidth / (indexes.Count);
+                int remainingSpace = remainingWidth % (indexes.Count);
+
+
+                for (int j = indexes.Count - 1; j >= 0; j--)
+                {
+                    stringBuilder.Insert(indexes[j], GetSpaceString(spaceCount));
+
+                    if (remainingSpace > j)
+                    {
+                        stringBuilder.Insert(indexes[j], ' ');
+                    }
+                }
+            }
+            result.Add(stringBuilder.ToString());
+            stringBuilder.Clear();
+            indexes.Clear();
+        }
+
+        private string GetSpaceString(int count)
+        {
+            string s = string.Empty;
+            return s.PadLeft(count, ' ');
+        }
+        #endregion
+
+        #region Day 27 403. Frog Jump
+        public bool CanCross(int[] stones)
+        {
+            Dictionary<int, HashSet<int>> map = new Dictionary<int, HashSet<int>>();
+
+            foreach (int stone in stones)
+            {
+                map.Add(stone, new HashSet<int>());
+            }
+            map[0].Add(1);
+            int targetStone = stones[stones.Length - 1];
+            foreach (int key in stones)
+            {
+                foreach (int jump in map[key])
+                {
+                    if (key + jump == targetStone) return true;
+                    if (map.ContainsKey(key + jump))
+                    {
+                        if (jump - 1 != 0) map[key + jump].Add(jump - 1);
+                        if (!map[key + jump].Contains(jump)) map[key + jump].Add(jump);
+                        if (!map[key + jump].Contains(jump+1)) map[key + jump].Add(jump+1);
+                    }
+                }
+            }
+            return false;
+        }
+        #endregion
+
+        #region Day 28 225. Implement Stack using Queues
+        public class MyStack
+        {
+            private Queue<int> q1;
+            private Queue<int> q2;
+            public MyStack()
+            {
+                q1 = new Queue<int>();
+                q2 = new Queue<int>();
+            }
+
+            public void Push(int x)
+            {
+                if (q1.Count > 0)
+                {
+                    q1.Enqueue(x);
+                }
+                else
+                {
+                    q2.Enqueue(x);
+                }
+            }
+
+            public int Pop()
+            {
+                if (q1.Count >= 1)
+                {
+                    return getPop(q1, q2, true);
+                }
+                else
+                {
+                    return getPop(q2, q1, true);
+                }
+            }
+
+            private int getPop(Queue<int> source, Queue<int> dest, bool remove = false)
+            {
+                while (source.Count > 1)
+                {
+                    dest.Enqueue(source.Dequeue());
+                }
+                int k = source.Dequeue();
+                if (!remove)
+                {
+                    dest.Enqueue(k);
+                }
+                return k;
+            }
+
+            public int Top()
+            {
+                if (q1.Count > 0)
+                {
+                    return getPop(q1, q2);
+                }
+                else
+                {
+                    return getPop(q2, q1);
+                }
+            }
+
+            public bool Empty()
+            {
+                return q1.Count == 0 && q2.Count == 0;
+            }
+        }
+        #endregion
+
+        #region Day 30 2366. Minimum Replacements to Sort the Array
+        public long MinimumReplacement(int[] nums)
+        {
+            int count = 0;
+            List<int> result = new List<int>(nums);
+            int n = nums.Length;
+            for (int i = n-2; i >= 0; i--)
+            {
+                if (result[i] > result[i + 1])
+                {
+                    int rem = result[i] - result[i+1];
+
+                    while (rem >= result[i+1])
+                    {
+                        result.Insert(i + 1, result[i+1]);
+                        result[i] -= result[i+1];
+                        rem = result[i] - result[i + 1];
+
+                    }
+
+                    if (result[i] > result[i + 1])
+                    {
+                        rem = result[i]/2;
+
+                        int rem1 = result[i]-rem;
+
+                        result.Insert(i+1,rem1);
+                        result[i] = rem;
+                    }
+                }
+            }
+
+            return result.Count-nums.Length;
+        }
+        #endregion
+
+
+        #region Day 31 1326. Minimum Number of Taps to Open to Water a Garden
+        public int MinTaps(int n, int[] ranges)
+        {
+            int[] maxReach = new int[n + 1];
+
+            // Calculate the maximum reach for each tap
+            for (int i = 0; i < ranges.Length; i++)
+            {
+                // Calculate the leftmost position the tap can reach
+                int start = Math.Max(0, i - ranges[i]);
+                // Calculate the rightmost position the tap can reach
+                int end = Math.Min(n, i + ranges[i]);
+
+                // Update the maximum reach for the leftmost position
+                maxReach[start] = Math.Max(maxReach[start], end);
+            }
+
+            // Number of taps used
+            int taps = 0;
+            // Current rightmost position reached
+            int currEnd = 0;
+            // Next rightmost position that can be reached
+            int nextEnd = 0;
+
+            // Iterate through the garden
+            for (int i = 0; i <= n; i++)
+            {
+                // Current position cannot be reached
+                if (i > nextEnd)
+                {
+                    return -1;
+                }
+
+                // Increment taps when moving to a new tap
+                if (i > currEnd)
+                {
+                    taps++;
+                    // Move to the rightmost position that can be reached
+                    currEnd = nextEnd;
+                }
+
+                // Update the next rightmost position that can be reached
+                nextEnd = Math.Max(nextEnd, maxReach[i]);
+            }
+
+            // Return the minimum number of taps used
+            return taps;
+
+
+        }
+        #endregion
         #region weekly-contest-357
         public string FinalString(string s)
         {
@@ -863,6 +1133,32 @@ namespace Aug
         }
         #endregion
 
+        #region weekly-contest-360
+        public int FurthestDistanceFromOrigin(string moves)
+        {
+            int leftMove = 0, rightMove = 0, none = 0;
+
+            foreach (char c in moves)
+            {
+                switch (c)
+                {
+                    case 'L':
+                        leftMove++;
+                        break;
+                    case 'R':
+                        rightMove++;
+                        break;
+                    default:
+                        none++;
+                        break;
+                }
+            }
+
+            int absDiff = Math.Abs(leftMove - rightMove);
+
+            return absDiff + none;
+        }
+        #endregion
 
         public bool RepeatedSubstringPattern(string s)
         {
